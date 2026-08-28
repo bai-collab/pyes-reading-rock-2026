@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="北園國小閱讀磐石計畫：以課程總圖為入口，串聯年級、閱讀策略、文本、學生任務、16項指標與執行進度。" />
+  <title>北園國小｜閱讀素養課程導航</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="回到首頁">
+        <span class="brand-mark">閱</span>
+        <span><strong>北園閱讀素養</strong><small>課程導航｜團隊討論版</small></span>
+      </a>
+      <nav class="main-nav" aria-label="主要導覽">
+        <a href="#curriculum">課程總圖</a>
+        <a href="#strategies">閱讀策略</a>
+        <a href="#indicators">16項指標</a>
+        <a href="#timeline">執行進度</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">北園引路，讀力跨越</p>
+        <h1>讀在地・會探究・能行動</h1>
+        <p class="lead">從「課程總圖」出發，一眼看見六年閱讀能力如何進階，以及每個年級如何串聯課程、文本、閱讀策略、學生作品與閱讀磐石指標。</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#curriculum">從課程總圖開始</a>
+          <a class="button ghost" href="#indicators">查看16項指標</a>
+        </div>
+      </div>
+      <div class="hero-map" aria-label="六年閱讀進程">
+        <div class="progress-line"></div>
+        <div class="hero-step"><b>一</b><span>發現</span><small>小小發現家</small></div>
+        <div class="hero-step"><b>二</b><span>記錄</span><small>生活記錄家</small></div>
+        <div class="hero-step"><b>三</b><span>調查</span><small>社區調查員</small></div>
+        <div class="hero-step"><b>四</b><span>詮釋</span><small>在地說書人</small></div>
+        <div class="hero-step"><b>五</b><span>分析</span><small>永續設計師</small></div>
+        <div class="hero-step"><b>六</b><span>行動</span><small>公民行動家</small></div>
+      </div>
+    </section>
+
+    <section id="curriculum" class="section">
+      <div class="section-heading">
+        <div><p class="eyebrow">首頁主入口</p><h2>課程總圖</h2></div>
+        <p>點選年級，展開「角色 → 能力 → 課程 → 文本 → 策略 → 任務 → 指標」的完整關聯。</p>
+      </div>
+      <div id="gradeTabs" class="grade-tabs" role="tablist" aria-label="年級選擇"></div>
+      <article id="gradeDetail" class="grade-detail" aria-live="polite"></article>
+      <div class="legend-note"><strong>注意：</strong>「候選核心文本」保留作為教師討論選項；「核心書／搭配文本」為目前建議組合。正式申報前仍需由各學年確認實際單元、明教策略、代表作品與評量規準。</div>
+    </section>
+
+    <section id="strategies" class="section alt">
+      <div class="section-heading">
+        <div><p class="eyebrow">對應指標 3-4</p><h2>閱讀策略 × 課程領域</h2></div>
+        <p>選一個策略，立即查看它在哪些年級出現，以及對應的課程、領域與學生任務。</p>
+      </div>
+      <div class="strategy-layout">
+        <div id="strategyList" class="strategy-list" aria-label="閱讀策略清單"></div>
+        <div id="strategyDetail" class="strategy-detail"></div>
+      </div>
+    </section>
+
+    <section id="indicators" class="section">
+      <div class="section-heading">
+        <div><p class="eyebrow">閱讀磐石</p><h2>16項指標導航</h2></div>
+        <p>不是只列指標名稱，而是直接看「要證明什麼」與「北園目前準備哪些證據」。</p>
+      </div>
+      <div class="indicator-filter" id="indicatorFilter"></div>
+      <div id="indicatorGrid" class="indicator-grid"></div>
+    </section>
+
+    <section id="timeline" class="section alt">
+      <div class="section-heading">
+        <div><p class="eyebrow">2026/12/31 前完成</p><h2>執行進度</h2></div>
+        <p>將甘特圖改成教師較容易閱讀的階段式時間線；細部管理仍以 Google Sheet 為準。</p>
+      </div>
+      <div class="milestones">
+        <div><b>9/18</b><span>架構鎖定</span></div>
+        <div><b>10/2</b><span>教學準備</span></div>
+        <div><b>11/27</b><span>證據收束</span></div>
+        <div><b>12/11</b><span>指標複核</span></div>
+        <div><b>12/31</b><span>完成版</span></div>
+      </div>
+      <div id="timelineList" class="timeline-list"></div>
+    </section>
+
+    <section class="section compact">
+      <div class="source-box">
+        <h2>使用原則</h2>
+        <p>本網站是「關聯閱讀版」，用於教師理解與討論；Google Sheet 仍是「資料管理版」。任何尚未實施、尚未確認或缺乏證據的內容，不應被呈現為既有成果。</p>
+        <div class="source-links">
+          <a href="https://docs.google.com/spreadsheets/d/1_PfpJp0ZxdyWQ_HnS78TdYtROceB11QTEC5oDCI8-RE/edit" target="_blank" rel="noopener">開啟執行甘特圖</a>
+          <a href="https://docs.google.com/document/d/1_BncsgoVbTp9uJsoLPFpyGffE7ulLWhfT2kInEQNXHI/edit" target="_blank" rel="noopener">各年級閱讀主題設計 v2</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>北園國小閱讀磐石計畫｜團隊討論版</span>
+    <span>資料更新基準：2026-08-28</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
