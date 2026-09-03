@@ -19,6 +19,7 @@
         <button id="zoomOut" type="button" aria-label="縮小">−</button>
         <button id="zoomIn" type="button" aria-label="放大">＋</button>
         <button id="fitMap" type="button">回到中心</button>
+        <button id="resetFocus" type="button" disabled>取消聚焦</button>
       </div>
     </header>
 
@@ -31,13 +32,14 @@
     <div class="map-help">
       <span><b>拖曳</b> 移動畫布</span>
       <span><b>滾輪</b> 縮放</span>
-      <span><b>滑過路線</b> 顯示關聯</span>
+      <span><b>滑過路線</b> 暫時聚焦</span>
+      <span><b>點年級</b> 鎖定聚焦</span>
       <span class="dash-key"><i></i> 跨年級關聯線</span>
     </div>
 
     <aside id="mapStatus" class="map-status" aria-live="polite">
       <strong>閱讀方式</strong>
-      <p>這是一張全展開路網圖。先看中心，再沿著六個年級往外讀到書名、任務與學習單；滑過任一路線時，其他不相關路線會淡化。</p>
+      <p>這是一張全展開路網圖。先看中心，再沿著六個年級往外讀到書名、任務與學習單；滑過任一路線時，其他不相關路線會淡化；點年級可把該年級與跨年級關聯固定亮起。</p>
     </aside>
   </main>
 
