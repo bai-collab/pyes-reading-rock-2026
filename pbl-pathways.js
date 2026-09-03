@@ -1,61 +1,58 @@
-const gradeOrder = ['一年級','二年級','三年級','四年級','五年級','六年級'];
-
-const axes = [
+const grades = [
   {
-    id:'place', title:'在地空間', subtitle:'從上學路走向城市', color:'#5f806d', soft:'#edf4ef', angle:-90,
-    grades:[
-      ['一年級','上學路／校園',{text:'《1、2、3，上學去！》',read:'順序・移景・空間',write:'記景小短文〈我的上學路〉',pbl:'上學路線圖／校園觀察'}],
-      ['二年級','北社尾公園',{text:'《全世界最特別的公園》',read:'比較・分類・地方觀察',write:'記景／比較〈我眼中的北社尾公園〉',pbl:'北社尾公園尋根／社區文物'}],
-      ['三年級','社區散步',{text:'《社區散步去》',read:'提問・摘要・地圖',write:'記敘〈社區散步記〉',pbl:'社區散步調查／路線與流程'}],
-      ['四年級','嘉南大圳／地方',{text:'《水水三腳埤》＋地方資料',read:'因果・水文圖・多文本',write:'記景＋事理說明〈跟著一滴水去旅行〉',pbl:'水 × 稻米 × 聚落探究'}],
-      ['五年級','校園公共問題',{text:'《如果我是市長》',read:'公共問題・利害關係人',write:'如何型議論〈如何讓學校更好？〉',pbl:'小市長選舉／校園政策提案'}],
-      ['六年級','社區／城市行動',{text:'公共議題與倡議文本',read:'立場比較・系統思考',write:'議論／倡議〈我想改變的一件事〉',pbl:'公民提案／社區與城市行動'}]
+    id:'g1', label:'一年級', progress:'發現', role:'小小發現家', color:'#4a86cf', soft:'#e9f2ff', angle:222,
+    branches:[
+      {id:'g1-beetle', label:'生命觀察線', book:'《假裝我是獨角仙》', task:'獨角仙復育／校園生命觀察', sheet:'學習單：如果我是獨角仙', themes:['life-observe']},
+      {id:'g1-route', label:'上學生活線', book:'《1、2、3，上學去！》', task:'上學路線圖／移景描寫', sheet:'學習單：我的上學路', themes:['place-route']}
     ]
   },
   {
-    id:'eco', title:'生態與資源', subtitle:'生命 → 生產 → 循環', color:'#79915b', soft:'#f0f4e8', angle:-18,
-    grades:[
-      ['一年級','獨角仙',{text:'《假裝我是獨角仙》',read:'觀察・指認・特徵',write:'第一人稱圖文記敘〈如果我是獨角仙〉',pbl:'獨角仙復育／校園生命觀察'}],
-      ['二年級','種子',{text:'《種子探險家》（候選）',read:'歷程・比較・因果',write:'觀察歷程／說明〈一顆種子的旅行〉',pbl:'食農・種子探究'}],
-      ['三年級','香草／蚊蟲',{text:'《香草植物栽培筆記》',read:'觀察・圖表・資料',write:'事物說明〈我的香草觀察記〉',pbl:'香草 × 蚊蟲探究'}],
-      ['四年級','水 × 稻米',{text:'《水水三腳埤》',read:'因果・水文圖・多文本',write:'記景＋事理說明',pbl:'嘉南大圳／稻米生產條件'}],
-      ['五年級','永續問題',{text:'環境／永續案例與資料',read:'證據評估・因果分析',write:'如何型／為何型議論',pbl:'用證據分析校園與社區永續問題'}],
-      ['六年級','資源循環',{text:'《分好的垃圾去哪兒了？》＋北園稻作情境',read:'系統流程・資料判讀・模型閱讀',write:'證據型議論／說明',pbl:'AI 回收分類＋火箭爐／稻梗炭化再利用'}]
+    id:'g2', label:'二年級', progress:'記錄', role:'生活記錄家', color:'#7c8d36', soft:'#f1f4df', angle:154,
+    branches:[
+      {id:'g2-park', label:'社區記憶線', book:'《全世界最特別的公園》', task:'北社尾公園尋根／社區文物', sheet:'學習單：我眼中的北社尾公園', themes:['park-memory']},
+      {id:'g2-seed', label:'食農起點線', book:'《種子探險家》', task:'食農・種子探究', sheet:'學習單：一顆種子的旅行', themes:['eco-cycle']}
     ]
   },
   {
-    id:'inquiry', title:'探究方法', subtitle:'從觀察走向驗證', color:'#4f7c84', soft:'#eaf2f3', angle:54,
-    grades:[
-      ['一年級','觀察',{text:'圖像、照片、簡易地圖',read:'看見・指認・描述',write:'用圖文留下觀察',pbl:'校園尋寶與生命觀察'}],
-      ['二年級','比較／記錄',{text:'地方照片、紀錄表、圖文書',read:'分類・比較・找差異',write:'比較與觀察紀錄',pbl:'公園／種子資料紀錄'}],
-      ['三年級','提問／調查',{text:'社區地圖、觀察表、圖表',read:'提問・摘要・讀圖表',write:'把調查整理成記敘／說明',pbl:'社區與自然調查'}],
-      ['四年級','訪談／整合',{text:'老照片、耆老口述、水文圖',read:'多來源互證・訪談',write:'敘事／訪談報告',pbl:'地方歷史與水文探究'}],
-      ['五年級','查證／分析',{text:'新聞、統計圖、查證案例',read:'來源查證・證據評估',write:'用證據支持議論主張',pbl:'公共問題診斷／假資訊查核'}],
-      ['六年級','AI／模型驗證',{text:'回收規則、模型流程、測試資料',read:'系統流程・反例・驗證',write:'以測試結果修正論點',pbl:'AI 分類驗證＋火箭爐燃燒模型'}]
+    id:'g3', label:'三年級', progress:'調查', role:'社區調查員', color:'#3f8f90', soft:'#e7f6f4', angle:98,
+    branches:[
+      {id:'g3-walk', label:'社區調查線', book:'《社區散步去》', task:'社區散步調查／路線流程圖', sheet:'學習單：社區散步記', themes:['place-route']},
+      {id:'g3-herb', label:'植物探究線', book:'《香草植物栽培筆記》', task:'香草 × 蚊蟲探究', sheet:'學習單：我的香草觀察記', themes:['life-observe']}
     ]
   },
   {
-    id:'literacy', title:'閱讀與寫作', subtitle:'從描述走向論證', color:'#766e90', soft:'#f0eef5', angle:126,
-    grades:[
-      ['一年級','描述',{text:'《假裝我是獨角仙》／《1、2、3，上學去！》',read:'觀察、順序、移景',write:'圖文記敘／記景小短文',pbl:'從真實觀察取得寫作素材'}],
-      ['二年級','比較／記錄',{text:'公園／種子相關文本',read:'比較、分類、歷程',write:'記景／觀察歷程',pbl:'把社區與食農紀錄轉成文章'}],
-      ['三年級','記敘／說明',{text:'《社區散步去》／《香草植物栽培筆記》',read:'提問、摘要、資料閱讀',write:'記敘文＋事物說明',pbl:'用調查結果支撐寫作'}],
-      ['四年級','敘事／報告',{text:'《大人的小學時代》／《水水三腳埤》',read:'訪談、多文本整合',write:'敘事／訪談報告／事理說明',pbl:'用人物、照片與水文資料互證'}],
-      ['五年級','議論',{text:'《如果我是市長》／《假消息終結戰》',read:'公共問題、來源查證',write:'如何型／為何型議論',pbl:'政見必須建立在調查與證據上'}],
-      ['六年級','論證／倡議',{text:'回收、選舉與公共議題文本',read:'立場比較、系統思考、反例',write:'證據型議論／公民倡議',pbl:'用 AI／模型資料形成主張與方案'}]
+    id:'g4', label:'四年級', progress:'詮釋', role:'在地說書人', color:'#7e6fb3', soft:'#f0ecfb', angle:38,
+    branches:[
+      {id:'g4-history', label:'地方記憶線', book:'《大人的小學時代》', task:'耆老訪談／地方記憶', sheet:'學習單：阿公阿嬤的小學時代', themes:['park-memory','interview-civic']},
+      {id:'g4-water', label:'稻米環境線', book:'《水水三腳埤》', task:'嘉南大圳／水 × 稻米探究', sheet:'學習單：跟著一滴水去旅行', themes:['eco-cycle']}
     ]
   },
   {
-    id:'civic', title:'科技與公民', subtitle:'工具服務真實行動', color:'#9a6b4b', soft:'#f6eee8', angle:198,
-    grades:[
-      ['一年級','圖像／地圖',{text:'照片、簡易地圖、QR 資訊',read:'圖像與空間閱讀',write:'圖文表達',pbl:'用圖像記錄校園與上學路'}],
-      ['二年級','分類',{text:'圖文書、紀錄表、地方照片',read:'把資訊整理成類別',write:'比較卡／圖文記錄',pbl:'用分類理解公園、種子與生活'}],
-      ['三年級','圖表／流程',{text:'地圖、流程圖、調查表',read:'讀圖表與關鍵資訊',write:'調查說明',pbl:'社區調查＋流程思考'}],
-      ['四年級','多來源整理',{text:'照片、訪談、水文圖',read:'跨媒介整理與互證',write:'數位敘事／報告',pbl:'地方故事與水資源資料整合'}],
-      ['五年級','假資訊 × 選舉',{text:'《如果我是市長》＋《假消息終結戰》',read:'來源可信度、證據與利害關係人',write:'議論與政策表達',pbl:'小市長選舉／有證據的政見'}],
-      ['六年級','AI／模擬 × 公民行動',{text:'《分好的垃圾去哪兒了？》＋資源循環／模型文本',read:'驗證 AI、讀模型、比較系統結果',write:'證據型議論／倡議',pbl:'①公民選舉×假資訊 ②AI回收分類 ③火箭爐×稻作副產物'}]
+    id:'g5', label:'五年級', progress:'分析', role:'永續設計師', color:'#d38c30', soft:'#fff2df', angle:-20,
+    branches:[
+      {id:'g5-mayor', label:'公共問題線', book:'《如果我是市長》', task:'小市長選舉／校園政策提案', sheet:'學習單：如何讓我們的學校更好？', themes:['interview-civic','civic-choice']},
+      {id:'g5-fact', label:'資訊判斷線', book:'《假消息終結戰》', task:'假資訊查核／證據評估', sheet:'學習單：為什麼查證資訊很重要？', themes:['verify-ai']}
+    ]
+  },
+  {
+    id:'g6', label:'六年級', progress:'行動', role:'公民行動家', color:'#c35663', soft:'#fdecef', angle:-94,
+    branches:[
+      {id:'g6-vote', label:'公民倡議線', book:'《去投票吧！》做出選擇，創造改變', task:'公民提案／立場比較', sheet:'學習單：我想改變的一件事', themes:['civic-choice']},
+      {id:'g6-recycle', label:'AI 回收線', book:'《分好的垃圾去哪兒了？》', task:'AI 資源回收辨識', sheet:'學習單：AI 能幫我們把垃圾分對嗎？', themes:['verify-ai']},
+      {id:'g6-biochar', label:'資源循環線', book:'北園稻作 × 稻梗／米糠', task:'火箭爐 × 碳化再利用', sheet:'學習單：稻梗燒掉就沒有了嗎？', themes:['eco-cycle']}
     ]
   }
+];
+
+const crossLinks = [
+  {from:'g1-route', to:'g3-walk', label:'上學路 → 社區散步'},
+  {from:'g1-beetle', to:'g3-herb', label:'生命觀察 → 植物探究'},
+  {from:'g2-park', to:'g4-history', label:'公園文物 → 地方記憶'},
+  {from:'g2-seed', to:'g4-water', label:'種子 → 稻米'},
+  {from:'g4-history', to:'g5-mayor', label:'耆老訪談 → 利害關係人'},
+  {from:'g5-mayor', to:'g6-vote', label:'選舉 → 公民提案'},
+  {from:'g5-fact', to:'g6-recycle', label:'查證 → AI 驗證'},
+  {from:'g4-water', to:'g6-biochar', label:'水 × 稻米 → 稻梗／米糠再利用'}
 ];
 
 const svg = document.getElementById('mindmapSvg');
@@ -65,263 +62,439 @@ const statusBox = document.getElementById('mapStatus');
 const zoomInBtn = document.getElementById('zoomIn');
 const zoomOutBtn = document.getElementById('zoomOut');
 const fitBtn = document.getElementById('fitMap');
-const collapseBtn = document.getElementById('collapseMap');
 const NS = 'http://www.w3.org/2000/svg';
-
+const center = {x:0,y:0};
+const branchAnchors = new Map();
+const routeGroups = new Map();
+const gradeGroups = new Map();
+const crossElements = [];
+const routeToGrade = new Map();
+const themeToRoutes = new Map();
+const relationMap = new Map();
 const state = {
-  expandedAxes:new Set(),
-  expandedGrades:new Set(),
   x:window.innerWidth/2,
   y:window.innerHeight/2,
-  scale:Math.max(.52,Math.min(.72,window.innerWidth/1500))
+  scale:Math.max(.62, Math.min(.92, window.innerWidth / 1800))
 };
-
 let drag = null;
-let suppressClickUntil = 0;
+let activeRoutes = null;
+let activeGrades = null;
 
-function el(tag,attrs={}){
-  const node=document.createElementNS(NS,tag);
-  Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,value));
+function createThemeRelations(){
+  grades.forEach(grade=>{
+    grade.branches.forEach(branch=>{
+      routeToGrade.set(branch.id, grade.id);
+      relationMap.set(branch.id, new Set([branch.id]));
+      branch.themes.forEach(theme=>{
+        if(!themeToRoutes.has(theme)) themeToRoutes.set(theme, new Set());
+        themeToRoutes.get(theme).add(branch.id);
+      });
+    });
+  });
+  themeToRoutes.forEach(routes=>{
+    const ids = [...routes];
+    ids.forEach(id=>{
+      const set = relationMap.get(id);
+      ids.forEach(other=>set.add(other));
+    });
+  });
+}
+
+function el(tag, attrs={}){
+  const node = document.createElementNS(NS, tag);
+  Object.entries(attrs).forEach(([key, value])=>node.setAttribute(key, value));
   return node;
 }
 
-function wrapLabel(text,max=12){
-  const chars=[...String(text)];
-  if(chars.length<=max) return [text];
-  const lines=[];
-  for(let i=0;i<chars.length;i+=max) lines.push(chars.slice(i,i+max).join(''));
-  return lines.slice(0,3);
-}
-
-function polar(angleDeg,radius){
-  const a=angleDeg*Math.PI/180;
-  return {x:Math.cos(a)*radius,y:Math.sin(a)*radius};
-}
-
-function nodeSize(type,label){
-  const length=[...label].length;
-  if(type==='root') return {w:230,h:78};
-  if(type==='axis') return {w:190,h:68};
-  if(type==='grade') return {w:180,h:64};
-  return {w:Math.min(220,150+Math.max(0,length-8)*5),h:length>18?76:62};
-}
-
-function addLink(from,to,className='map-link'){
-  const dx=to.x-from.x,dy=to.y-from.y;
-  const d=`M ${from.x} ${from.y} C ${from.x+dx*.42} ${from.y+dy*.12}, ${from.x+dx*.58} ${from.y+dy*.88}, ${to.x} ${to.y}`;
-  viewport.appendChild(el('path',{d,class:className}));
-}
-
-function addNode({id,type,title,subtitle='',x,y,color='#5f806d',soft='#edf4ef',open=false,onClick=null}){
-  const size=nodeSize(type,title);
-  const g=el('g',{
-    class:`map-node ${type} ${open?'is-open':''} entering`,
-    transform:`translate(${x-size.w/2} ${y-size.h/2})`,
-    tabindex:onClick?'0':'-1',
-    role:onClick?'button':'group',
-    'aria-label':subtitle?`${title}。${subtitle}`:title
+function addText(parent, x, y, lines, className){
+  const text = el('text', {x, y, class:className, 'text-anchor':'middle'});
+  const arr = Array.isArray(lines) ? lines : [lines];
+  arr.forEach((line, index)=>{
+    const tspan = el('tspan', {x, dy:index===0?0:18});
+    tspan.textContent = line;
+    text.appendChild(tspan);
   });
-  g.style.setProperty('--node-color',color);
-  g.style.setProperty('--node-soft',soft);
-  g.dataset.id=id;
-  g.appendChild(el('rect',{class:'node-card',x:0,y:0,width:size.w,height:size.h,rx:type==='root'?24:18}));
+  parent.appendChild(text);
+  return text;
+}
 
-  const lines=wrapLabel(title,type==='detail'?14:11);
-  const baseY=subtitle?size.h/2-(lines.length-1)*9-5:size.h/2-(lines.length-1)*9+5;
-  lines.forEach((line,index)=>{
-    const t=el('text',{class:'node-title',x:size.w/2,y:baseY+index*18,'dominant-baseline':'middle'});
-    t.textContent=line;
-    g.appendChild(t);
+function wrapText(text, maxChars=12){
+  const chars = [...String(text)];
+  const out = [];
+  for(let i=0; i<chars.length; i += maxChars){
+    out.push(chars.slice(i, i + maxChars).join(''));
+  }
+  return out.slice(0, 3);
+}
+
+function polar(angleDeg, radius){
+  const rad = angleDeg * Math.PI / 180;
+  return {x: Math.cos(rad) * radius, y: Math.sin(rad) * radius};
+}
+
+function branchOffsets(count){
+  if(count === 1) return [0];
+  if(count === 2) return [-14, 14];
+  if(count === 3) return [-22, 0, 22];
+  const start = -18 * (count - 1) / 2;
+  return Array.from({length: count}, (_, i)=>start + i * 18);
+}
+
+function cardSize(type, text){
+  const lines = wrapText(text, type === 'grade' ? 6 : 12);
+  const height = type === 'grade' ? 92 : 84 + Math.max(0, lines.length - 1) * 14;
+  let width = 214;
+  if(type === 'center') width = 260;
+  if(type === 'grade') width = 210;
+  if(type === 'sheet') width = 236;
+  return {width, height, lines};
+}
+
+function makeNode({id, type, title, subtitle='', x, y, color, soft, badge=''}){
+  const {width, height, lines} = cardSize(type, title);
+  const group = el('g', {class:`map-node ${type}`, transform:`translate(${x - width/2} ${y - height/2})`});
+  group.style.setProperty('--node-color', color);
+  group.style.setProperty('--node-soft', soft);
+  group.dataset.id = id;
+  group.appendChild(el('rect', {class:'node-card', x:0, y:0, width, height, rx:type==='center'?28:24}));
+
+  let titleY = 34;
+  if(badge){
+    group.appendChild(el('rect',{class:'node-badge', x:14, y:12, width:50, height:22, rx:11}));
+    addText(group, 39, 27, badge, 'node-badge-text');
+    titleY = 50;
+  }
+  if(type === 'grade'){
+    addText(group, width/2, 24, `${subtitle}`, 'node-kicker');
+    titleY = 56;
+  }
+  if(type === 'center') titleY = 42;
+  addText(group, width/2, titleY, lines, 'node-title');
+  if(type !== 'grade' && subtitle){
+    addText(group, width/2, height - 16, wrapText(subtitle, 20)[0], 'node-sub');
+  }
+  if(type === 'grade'){
+    addText(group, width/2, height - 18, title === '六年級' ? '六年收束與行動' : '年級主線樞紐', 'node-sub');
+  }
+  return group;
+}
+
+function routePoints(gradeAngle, offset){
+  return {
+    branch: polar(gradeAngle + offset, 438),
+    task: polar(gradeAngle + offset, 678),
+    sheet: polar(gradeAngle + offset, 920)
+  };
+}
+
+function trunkPoint(angle){
+  return polar(angle, 220);
+}
+
+function routePath(from, branch, task, sheet){
+  return [
+    `M ${from.x} ${from.y}`,
+    `L ${branch.x} ${branch.y}`,
+    `L ${task.x} ${task.y}`,
+    `L ${sheet.x} ${sheet.y}`
+  ].join(' ');
+}
+
+function drawCenter(){
+  const centerNode = makeNode({
+    id:'center', type:'center', title:'北園六年閱讀 PBL',
+    subtitle:'六個年級 × 書名 × 任務 × 學習單',
+    x:center.x, y:center.y, color:'#4a6857', soft:'#f1f6f2', badge:'核心'
   });
-  if(subtitle){
-    const sub=el('text',{class:'node-sub',x:size.w/2,y:size.h-11});
-    sub.textContent=subtitle;
-    g.appendChild(sub);
-  }
-  if(type==='axis' || type==='grade'){
-    g.appendChild(el('circle',{class:'node-dot',cx:size.w-11,cy:11,r:5}));
-  }
-  if(onClick){
-    const activate=(event)=>{
-      if(Date.now()<suppressClickUntil) return;
-      event.stopPropagation();
-      onClick();
-    };
-    g.addEventListener('click',activate);
-    g.addEventListener('keydown',event=>{
-      if(event.key==='Enter' || event.key===' '){event.preventDefault();activate(event);}
+  viewport.appendChild(centerNode);
+}
+
+function drawGradesAndRoutes(){
+  grades.forEach(grade=>{
+    const gradePoint = trunkPoint(grade.angle);
+    const gradeGroup = el('g', {class:'grade-group', 'data-grade':grade.id});
+    const trunk = el('path', {
+      d:`M ${center.x} ${center.y} L ${gradePoint.x} ${gradePoint.y}`,
+      class:'map-link grade-trunk', stroke:grade.color, 'data-grade':grade.id
     });
-  }
-  viewport.appendChild(g);
-  return {x,y,w:size.w,h:size.h,el:g};
-}
+    gradeGroup.appendChild(trunk);
+    const gradeNode = makeNode({
+      id:grade.id, type:'grade', title:grade.label, subtitle:`${grade.progress}｜${grade.role}`,
+      x:gradePoint.x, y:gradePoint.y, color:grade.color, soft:grade.soft
+    });
+    gradeGroup.appendChild(gradeNode);
+    gradeGroups.set(grade.id, gradeGroup);
 
-function buildGeometry(){
-  const geometry={root:{x:0,y:0},axes:new Map(),grades:new Map(),details:new Map()};
-  axes.forEach(axis=>{
-    const axisPos=polar(axis.angle,260);
-    geometry.axes.set(axis.id,axisPos);
-    if(!state.expandedAxes.has(axis.id)) return;
+    attachGradeHover(gradeGroup, grade);
+    viewport.appendChild(gradeGroup);
 
-    axis.grades.forEach((grade,index)=>{
-      const radius=460+index*165;
-      const bend=(index-2.5)*1.2;
-      const pos=polar(axis.angle+bend,radius);
-      const key=`${axis.id}:${grade[0]}`;
-      geometry.grades.set(key,pos);
-      if(!state.expandedGrades.has(key)) return;
+    const offsets = branchOffsets(grade.branches.length);
+    grade.branches.forEach((branch, index)=>{
+      const pts = routePoints(grade.angle, offsets[index]);
+      branchAnchors.set(branch.id, {grade:gradePoint, ...pts, color:grade.color});
 
-      const outwardAngle=(axis.angle+bend)*Math.PI/180;
-      const ux=Math.cos(outwardAngle),uy=Math.sin(outwardAngle);
-      const tx=-uy,ty=ux;
-      const offsets=[-210,-70,70,210];
-      const keys=['text','read','write','pbl'];
-      keys.forEach((detailKey,i)=>{
-        geometry.details.set(`${key}:${detailKey}`,{
-          x:pos.x+ux*145+tx*offsets[i],
-          y:pos.y+uy*145+ty*offsets[i]
-        });
+      const routeGroup = el('g', {class:'route-group', 'data-route':branch.id});
+      const path = el('path', {
+        d:routePath(gradePoint, pts.branch, pts.task, pts.sheet),
+        class:'map-link route-line', stroke:grade.color, 'data-route':branch.id
       });
+      routeGroup.appendChild(path);
+
+      const bookNode = makeNode({
+        id:`${branch.id}-book`, type:'book', title:branch.book, subtitle:'核心文本',
+        x:pts.branch.x, y:pts.branch.y, color:grade.color, soft:grade.soft, badge:'書名'
+      });
+      const taskNode = makeNode({
+        id:`${branch.id}-task`, type:'task', title:branch.task, subtitle:branch.label,
+        x:pts.task.x, y:pts.task.y, color:grade.color, soft:grade.soft, badge:'任務'
+      });
+      const sheetNode = makeNode({
+        id:`${branch.id}-sheet`, type:'sheet', title:branch.sheet, subtitle:'閱讀學習單',
+        x:pts.sheet.x, y:pts.sheet.y, color:grade.color, soft:grade.soft, badge:'學習單'
+      });
+      routeGroup.appendChild(bookNode);
+      routeGroup.appendChild(taskNode);
+      routeGroup.appendChild(sheetNode);
+      routeGroups.set(branch.id, routeGroup);
+      attachRouteHover(routeGroup, grade, branch);
+      viewport.appendChild(routeGroup);
     });
   });
-  return geometry;
 }
 
-function render(){
-  viewport.innerHTML='';
-  const geo=buildGeometry();
+function crossPath(from, to){
+  const dx = to.x - from.x;
+  const dy = to.y - from.y;
+  const c1x = from.x + dx * .3;
+  const c1y = from.y + (dy > 0 ? 90 : -90);
+  const c2x = from.x + dx * .7;
+  const c2y = to.y + (dy > 0 ? -90 : 90);
+  return `M ${from.x} ${from.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${to.x} ${to.y}`;
+}
 
-  axes.forEach(axis=>{
-    const axisPos=geo.axes.get(axis.id);
-    addLink(geo.root,axisPos,'map-link axis-link');
-    if(!state.expandedAxes.has(axis.id)) return;
+function drawCrossLinks(){
+  const group = el('g', {class:'cross-group'});
+  crossLinks.forEach(link=>{
+    const from = branchAnchors.get(link.from)?.task;
+    const to = branchAnchors.get(link.to)?.task;
+    if(!from || !to) return;
+    const path = el('path', {d:crossPath(from, to), class:'map-link cross-link', 'data-from':link.from, 'data-to':link.to});
+    group.appendChild(path);
+    const mx = (from.x + to.x) / 2;
+    const my = (from.y + to.y) / 2;
+    const label = el('text', {x:mx, y:my - 8, class:'cross-label', 'text-anchor':'middle'});
+    label.textContent = link.label;
+    group.appendChild(label);
+    crossElements.push({path, label, from:link.from, to:link.to, labelText:link.label});
+  });
+  viewport.insertBefore(group, viewport.firstChild);
+}
 
-    let previous=axisPos;
-    axis.grades.forEach(grade=>{
-      const key=`${axis.id}:${grade[0]}`;
-      const pos=geo.grades.get(key);
-      addLink(previous,pos,'map-link');
-      previous=pos;
-      if(!state.expandedGrades.has(key)) return;
-      ['text','read','write','pbl'].forEach(detailKey=>addLink(pos,geo.details.get(`${key}:${detailKey}`),'map-link'));
+function relatedRoutesFor(routeId){
+  return relationMap.get(routeId) ? new Set(relationMap.get(routeId)) : new Set([routeId]);
+}
+
+function updateStatusForRoute(grade, branch, relatedSet){
+  const relatedNames = [...relatedSet]
+    .filter(id=>id !== branch.id)
+    .map(id=>{
+      for(const item of grades){
+        const found = item.branches.find(branchItem=>branchItem.id === id);
+        if(found) return `${item.label}｜${found.book}`;
+      }
+      return null;
+    })
+    .filter(Boolean);
+
+  statusBox.innerHTML = `
+    <strong>${grade.label}｜${branch.label}</strong>
+    <p><b>書名：</b>${branch.book}<br><b>要做的事：</b>${branch.task}<br><b>學習單：</b>${branch.sheet}</p>
+    ${relatedNames.length ? `<ul>${relatedNames.map(name=>`<li>關聯路線：${name}</li>`).join('')}</ul>` : ''}
+  `;
+}
+
+function updateStatusForGrade(grade){
+  statusBox.innerHTML = `
+    <strong>${grade.label}｜${grade.progress}｜${grade.role}</strong>
+    <p>這個年級共有 ${grade.branches.length} 條主線，已全部展開在畫布上。</p>
+    <ul>${grade.branches.map(branch=>`<li>${branch.book} → ${branch.task} → ${branch.sheet}</li>`).join('')}</ul>
+  `;
+}
+
+function showDefaultStatus(){
+  statusBox.innerHTML = `
+    <strong>閱讀方式</strong>
+    <p>這是一張全展開路網圖。先看中心，再沿著六個年級往外讀到書名、任務與學習單；滑過任一路線時，其他不相關路線會淡化。</p>
+  `;
+}
+
+function applyActive(routeIds, gradeIds){
+  activeRoutes = routeIds ? new Set(routeIds) : null;
+  activeGrades = gradeIds ? new Set(gradeIds) : null;
+
+  routeGroups.forEach((group, routeId)=>{
+    const on = activeRoutes ? activeRoutes.has(routeId) : true;
+    group.classList.toggle('is-dim', !on);
+    group.querySelectorAll('.map-link, .map-node').forEach(elm=>{
+      elm.classList.toggle('is-dim', !on);
+      elm.classList.toggle('route-hot', on && elm.classList.contains('map-link'));
+      elm.classList.toggle('is-hot', on && elm.classList.contains('map-node'));
     });
   });
 
-  if(state.expandedAxes.has('eco')){
-    const from=geo.grades.get('eco:四年級');
-    const to=geo.grades.get('eco:六年級');
-    if(from&&to){
-      const dx=to.x-from.x,dy=to.y-from.y;
-      const bendX=(from.x+to.x)/2 + (-dy)*.18;
-      const bendY=(from.y+to.y)/2 + dx*.18;
-      const d=`M ${from.x} ${from.y} Q ${bendX} ${bendY} ${to.x} ${to.y}`;
-      viewport.appendChild(el('path',{d,class:'map-link cross-link'}));
-      const label=el('text',{class:'cross-label',x:bendX,y:bendY-10,'text-anchor':'middle'});
-      label.textContent='稻米生產 → 稻梗／米糠再利用';
-      viewport.appendChild(label);
+  gradeGroups.forEach((group, gradeId)=>{
+    const on = activeGrades ? activeGrades.has(gradeId) : true;
+    group.querySelectorAll('.map-link, .map-node').forEach(elm=>{
+      elm.classList.toggle('is-dim', !on);
+      elm.classList.toggle('route-hot', on && elm.classList.contains('map-link'));
+      elm.classList.toggle('is-hot', on && elm.classList.contains('map-node'));
+    });
+  });
+
+  crossElements.forEach(item=>{
+    const on = activeRoutes ? (activeRoutes.has(item.from) && activeRoutes.has(item.to)) : true;
+    item.path.classList.toggle('is-dim', !on);
+    item.path.classList.toggle('cross-hot', on);
+    item.label.classList.toggle('is-dim', !on);
+  });
+}
+
+function resetActive(){
+  activeRoutes = null;
+  activeGrades = null;
+  routeGroups.forEach(group=>{
+    group.querySelectorAll('.map-link, .map-node').forEach(elm=>{
+      elm.classList.remove('is-dim','route-hot','is-hot');
+    });
+  });
+  gradeGroups.forEach(group=>{
+    group.querySelectorAll('.map-link, .map-node').forEach(elm=>{
+      elm.classList.remove('is-dim','route-hot','is-hot');
+    });
+  });
+  crossElements.forEach(item=>{
+    item.path.classList.remove('is-dim','cross-hot');
+    item.label.classList.remove('is-dim');
+  });
+  showDefaultStatus();
+}
+
+function attachRouteHover(group, grade, branch){
+  const enter = ()=>{
+    const related = relatedRoutesFor(branch.id);
+    const gradeIds = new Set([...related].map(id=>routeToGrade.get(id)).filter(Boolean));
+    gradeIds.add(grade.id);
+    applyActive(related, gradeIds);
+    updateStatusForRoute(grade, branch, related);
+  };
+  const leave = ()=>resetActive();
+  group.addEventListener('mouseenter', enter);
+  group.addEventListener('mouseleave', leave);
+  group.addEventListener('focusin', enter);
+  group.addEventListener('focusout', leave);
+}
+
+function attachGradeHover(group, grade){
+  const enter = ()=>{
+    const ownRoutes = new Set(grade.branches.map(branch=>branch.id));
+    applyActive(ownRoutes, new Set([grade.id]));
+    updateStatusForGrade(grade);
+  };
+  const leave = ()=>resetActive();
+  group.addEventListener('mouseenter', enter);
+  group.addEventListener('mouseleave', leave);
+  group.addEventListener('focusin', enter);
+  group.addEventListener('focusout', leave);
+}
+
+function setTransform(){
+  viewport.setAttribute('transform', `translate(${state.x} ${state.y}) scale(${state.scale})`);
+}
+
+function fitMap(){
+  state.x = window.innerWidth / 2;
+  state.y = window.innerHeight / 2;
+  state.scale = Math.max(.62, Math.min(.92, window.innerWidth / 1800));
+  setTransform();
+}
+
+function bindPanZoom(){
+  canvas.addEventListener('pointerdown', event=>{
+    drag = {x:event.clientX, y:event.clientY, originX:state.x, originY:state.y};
+    canvas.classList.add('dragging');
+    canvas.setPointerCapture(event.pointerId);
+  });
+  canvas.addEventListener('pointermove', event=>{
+    if(!drag) return;
+    state.x = drag.originX + (event.clientX - drag.x);
+    state.y = drag.originY + (event.clientY - drag.y);
+    setTransform();
+  });
+  const endDrag = event=>{
+    if(event.pointerId && canvas.hasPointerCapture(event.pointerId)){
+      canvas.releasePointerCapture(event.pointerId);
     }
-  }
+    drag = null;
+    canvas.classList.remove('dragging');
+  };
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
+  canvas.addEventListener('wheel', event=>{
+    event.preventDefault();
+    const factor = event.deltaY < 0 ? 1.08 : 0.92;
+    const next = Math.max(.34, Math.min(1.6, state.scale * factor));
+    const rect = svg.getBoundingClientRect();
+    const px = event.clientX - rect.left;
+    const py = event.clientY - rect.top;
+    const wx = (px - state.x) / state.scale;
+    const wy = (py - state.y) / state.scale;
+    state.scale = next;
+    state.x = px - wx * state.scale;
+    state.y = py - wy * state.scale;
+    setTransform();
+  }, {passive:false});
+}
 
-  addNode({id:'root',type:'root',title:'北園六年閱讀 PBL',subtitle:'從看見我的世界，到改變我們的世界',x:0,y:0,open:true,onClick:()=>{
-    state.expandedAxes.clear();state.expandedGrades.clear();render();showStatus('北園六年閱讀 PBL','五條縱貫主軸由中心向外生長；點主軸展開一年級到六年級。');
-  }});
-
-  axes.forEach(axis=>{
-    const axisPos=geo.axes.get(axis.id);
-    const axisOpen=state.expandedAxes.has(axis.id);
-    addNode({id:axis.id,type:'axis',title:axis.title,subtitle:axis.subtitle,x:axisPos.x,y:axisPos.y,color:axis.color,soft:axis.soft,open:axisOpen,onClick:()=>{
-      if(axisOpen){
-        state.expandedAxes.delete(axis.id);
-        [...state.expandedGrades].filter(key=>key.startsWith(`${axis.id}:`)).forEach(key=>state.expandedGrades.delete(key));
-      }else state.expandedAxes.add(axis.id);
-      render();showStatus(axis.title,axisOpen?'已收合這條六年縱貫主軸。':'已展開一年級到六年級；再點任一年級可看到下層課程。');
-    }});
-
-    if(!axisOpen) return;
-    axis.grades.forEach((grade,index)=>{
-      const [gradeName,stage,detail]=grade;
-      const key=`${axis.id}:${gradeName}`;
-      const pos=geo.grades.get(key);
-      const gradeOpen=state.expandedGrades.has(key);
-      addNode({id:key,type:'grade',title:`${gradeName}｜${stage}`,subtitle:`${index+1} → ${index+2<=6?gradeOrder[index+1]:'行動收束'}`,x:pos.x,y:pos.y,color:axis.color,soft:axis.soft,open:gradeOpen,onClick:()=>{
-        if(gradeOpen) state.expandedGrades.delete(key); else state.expandedGrades.add(key);
-        render();showStatus(`${axis.title}｜${gradeName}｜${stage}`,gradeOpen?'已收合下層。':'下層已展開：核心文本／情境、閱讀／探究、寫作、PBL 行動。');
-      }});
-
-      if(!gradeOpen) return;
-      const detailDefs=[
-        ['text','文本／情境',detail.text],
-        ['read','閱讀／探究',detail.read],
-        ['write','寫作',detail.write],
-        ['pbl','PBL 行動',detail.pbl]
-      ];
-      detailDefs.forEach(([detailKey,label,value])=>{
-        const dpos=geo.details.get(`${key}:${detailKey}`);
-        addNode({id:`${key}:${detailKey}`,type:'detail',title:value,subtitle:label,x:dpos.x,y:dpos.y,color:axis.color,soft:axis.soft});
-      });
-    });
+function bindButtons(){
+  zoomInBtn.addEventListener('click', ()=>{
+    state.scale = Math.min(1.6, state.scale * 1.12);
+    setTransform();
   });
-
-  applyTransform();
+  zoomOutBtn.addEventListener('click', ()=>{
+    state.scale = Math.max(.34, state.scale / 1.12);
+    setTransform();
+  });
+  fitBtn.addEventListener('click', fitMap);
 }
 
-function showStatus(title,text){
-  statusBox.innerHTML=`<strong>${title}</strong><p>${text}</p>`;
+function resize(){
+  svg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+  setTransform();
 }
 
-function applyTransform(){
-  viewport.setAttribute('transform',`translate(${state.x} ${state.y}) scale(${state.scale})`);
+function drawGuideLabels(){
+  const ring = el('circle', {cx:0, cy:0, r:112, fill:'none', stroke:'#e3e8e4', 'stroke-dasharray':'6 8'});
+  viewport.insertBefore(ring, viewport.firstChild);
+  const hint = el('text', {x:0, y:-126, class:'grade-label', 'text-anchor':'middle'});
+  hint.textContent = '從中心向外讀：年級 → 書名 → 任務 → 學習單';
+  viewport.insertBefore(hint, viewport.firstChild);
 }
 
-function resetView(){
-  state.x=window.innerWidth/2;
-  state.y=window.innerHeight/2;
-  state.scale=Math.max(.52,Math.min(.72,window.innerWidth/1500));
-  applyTransform();
+function init(){
+  createThemeRelations();
+  resize();
+  drawGuideLabels();
+  drawCenter();
+  drawGradesAndRoutes();
+  drawCrossLinks();
+  bindPanZoom();
+  bindButtons();
+  fitMap();
+  showDefaultStatus();
+  window.addEventListener('resize', ()=>{
+    resize();
+    fitMap();
+  });
 }
 
-function zoomAt(factor,cx=window.innerWidth/2,cy=window.innerHeight/2){
-  const old=state.scale;
-  const next=Math.max(.28,Math.min(1.9,old*factor));
-  const worldX=(cx-state.x)/old;
-  const worldY=(cy-state.y)/old;
-  state.x=cx-worldX*next;
-  state.y=cy-worldY*next;
-  state.scale=next;
-  applyTransform();
-}
-
-canvas.addEventListener('pointerdown',event=>{
-  if(event.button!==0 || event.target.closest('.map-node')) return;
-  canvas.setPointerCapture(event.pointerId);
-  drag={id:event.pointerId,startX:event.clientX,startY:event.clientY,x:state.x,y:state.y,moved:false};
-  canvas.classList.add('dragging');
-});
-canvas.addEventListener('pointermove',event=>{
-  if(!drag || drag.id!==event.pointerId) return;
-  const dx=event.clientX-drag.startX,dy=event.clientY-drag.startY;
-  if(Math.hypot(dx,dy)>4) drag.moved=true;
-  state.x=drag.x+dx;state.y=drag.y+dy;applyTransform();
-});
-function endDrag(event){
-  if(!drag || drag.id!==event.pointerId) return;
-  if(drag.moved) suppressClickUntil=Date.now()+120;
-  drag=null;canvas.classList.remove('dragging');
-  try{canvas.releasePointerCapture(event.pointerId)}catch{}
-}
-canvas.addEventListener('pointerup',endDrag);
-canvas.addEventListener('pointercancel',endDrag);
-canvas.addEventListener('wheel',event=>{
-  event.preventDefault();
-  zoomAt(event.deltaY<0?1.1:.9,event.clientX,event.clientY);
-},{passive:false});
-
-zoomInBtn.addEventListener('click',()=>zoomAt(1.15));
-zoomOutBtn.addEventListener('click',()=>zoomAt(.87));
-fitBtn.addEventListener('click',()=>{resetView();showStatus('回到中心','畫布已回到知識地圖中心。');});
-collapseBtn.addEventListener('click',()=>{
-  state.expandedAxes.clear();state.expandedGrades.clear();render();resetView();showStatus('全部收合','目前只保留中央核心與五條六年縱貫主軸。');
-});
-window.addEventListener('resize',()=>{resetView();});
-
-render();
+init();
