@@ -1,0 +1,568 @@
+<title>北園六年閱讀 PBL 課程總圖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&family=IBM+Plex+Mono:wght@500;600&display=swap">
+
+<style>
+:root{
+  --bg:#eef1ec;--bg2:#e2e7e0;--panel:#ffffffee;--ink:#20302a;--muted:#5f6f66;--faint:#8b978d;
+  --card:#ffffff;--line:#d5ddd6;--line-soft:#e6ebe5;--accent:#3f6152;--comb:#b3bcb2;
+  --shadow:0 16px 40px rgba(20,36,26,.14);--shadow-sm:0 5px 16px rgba(20,36,26,.10);
+  --f-記:#3f7fae;--f-說:#3f8f6a;--f-議:#cf6a3c;--f-應:#8a6bbf;--f-none:#9aa79d;
+}
+:root:not([data-theme="light"]){@media (prefers-color-scheme:dark){
+  --bg:#101613;--bg2:#0c1210;--panel:#19221dee;--ink:#e8eee9;--muted:#9fb0a5;--faint:#79897f;
+  --card:#1b241f;--line:#2c3a32;--line-soft:#233029;--accent:#84bda3;--comb:#4c554687;
+  --shadow:0 18px 46px rgba(0,0,0,.5);--shadow-sm:0 5px 18px rgba(0,0,0,.35);
+  --f-記:#6ba6d4;--f-說:#5cb387;--f-議:#e69061;--f-應:#a99ce2;--f-none:#7a8b81;
+}}
+:root[data-theme="dark"]{
+  --bg:#101613;--bg2:#0c1210;--panel:#19221dee;--ink:#e8eee9;--muted:#9fb0a5;--faint:#79897f;
+  --card:#1b241f;--line:#2c3a32;--line-soft:#233029;--accent:#84bda3;--comb:#4c5546;
+  --shadow:0 18px 46px rgba(0,0,0,.5);--shadow-sm:0 5px 18px rgba(0,0,0,.35);
+  --f-記:#6ba6d4;--f-說:#5cb387;--f-議:#e69061;--f-應:#a99ce2;--f-none:#7a8b81;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;color:var(--ink);
+  background:radial-gradient(120% 120% at 50% 50%,var(--bg) 0%,var(--bg2) 100%) fixed,var(--bg2);-webkit-font-smoothing:antialiased}
+.stage{position:fixed;inset:0;overflow:hidden;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.stage *{user-select:none;-webkit-user-select:none}
+.stage.dragging{cursor:grabbing}
+#board{position:absolute;top:0;left:0;transform-origin:0 0}
+#wires{position:absolute;top:0;left:0;overflow:visible}
+
+/* center hub */
+.hub{position:absolute;transform:translate(-50%,-50%);z-index:4;text-align:center;background:var(--card);
+  border:2.5px solid var(--accent);border-radius:50%;width:186px;height:186px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;box-shadow:var(--shadow);padding:16px;cursor:pointer}
+.hub .k{font-family:"IBM Plex Mono",monospace;font-size:.6rem;letter-spacing:.22em;color:var(--accent);font-weight:600}
+.hub b{font-family:"Noto Serif TC",serif;font-size:1.16rem;font-weight:900;line-height:1.25;margin-top:5px}
+.hub small{color:var(--muted);font-size:.68rem;margin-top:6px;line-height:1.3}
+
+/* grade hub */
+.gnode{position:absolute;transform:translate(-50%,-50%);z-index:3;cursor:pointer;width:132px;
+  background:color-mix(in srgb,var(--zc) 15%,var(--card));border:2px solid var(--zc);border-radius:16px;
+  padding:9px 12px;text-align:center;box-shadow:var(--shadow-sm);transition:box-shadow .15s,transform .12s}
+.gnode:hover{transform:translate(-50%,-50%) scale(1.04);box-shadow:var(--shadow)}
+.gnode:focus-visible{outline:2px solid var(--zc);outline-offset:2px}
+.gnode .gn{font-family:"Noto Serif TC",serif;font-weight:900;font-size:1.5rem;line-height:1;color:var(--zc)}
+.gnode .gs{font-weight:900;font-size:.92rem;margin-top:2px}
+.gnode .gr{font-size:.68rem;color:var(--muted);margin-top:3px;font-family:"IBM Plex Mono",monospace}
+
+/* book card */
+.card{--gc:var(--zc);position:absolute;transform:translate(-50%,-50%);z-index:2;width:194px;
+  background:var(--card);border:1px solid var(--line);border-radius:13px;padding:9px 12px 10px;
+  box-shadow:var(--shadow-sm);cursor:grab;transition:box-shadow .15s,border-color .15s,opacity .2s}
+.card::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:4px;border-radius:4px;background:var(--zc);opacity:.6}
+.card:hover{box-shadow:var(--shadow);border-color:color-mix(in srgb,var(--zc) 45%,var(--line))}
+.card.dragging{cursor:grabbing;z-index:8;box-shadow:var(--shadow),0 0 0 2px color-mix(in srgb,var(--zc) 30%,transparent)}
+.card.course-card{border-style:dashed}
+.card.course-card .c-book{font-family:"Noto Sans TC",sans-serif}
+.card:focus-visible{outline:2px solid var(--zc);outline-offset:2px}
+.c-topline{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.genre{display:inline-flex;align-items:center;gap:4px;font-size:.67rem;font-weight:700;color:var(--fc);
+  border:1px dashed color-mix(in srgb,var(--fc) 55%,var(--line));background:color-mix(in srgb,var(--fc) 10%,transparent);
+  border-radius:6px;padding:1px 6px;line-height:1.3}
+.genre-action{cursor:pointer;transition:background .15s,box-shadow .15s,transform .15s}
+.genre-action:hover{background:color-mix(in srgb,var(--fc) 20%,transparent);box-shadow:0 2px 8px color-mix(in srgb,var(--fc) 18%,transparent);transform:translateY(-1px)}
+.genre-action:focus-visible{outline:2px solid var(--fc);outline-offset:2px}
+.genre .qm{font-family:"IBM Plex Mono",monospace;font-size:.6rem;opacity:.7}
+.genre.none{color:var(--faint);border-color:var(--line)}
+.themedots{display:flex;gap:4px;margin-left:auto}
+.tdot{width:8px;height:8px;border-radius:50%;background:var(--dc);box-shadow:0 0 0 2px color-mix(in srgb,var(--dc) 20%,transparent)}
+.c-book{font-family:"Noto Serif TC",serif;font-weight:700;font-size:.94rem;line-height:1.28;margin:0 0 7px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.c-meta{display:flex;flex-direction:column;gap:4px}
+.c-row{display:flex;gap:6px;align-items:flex-start;font-size:.73rem;line-height:1.3}
+.c-tag{flex:none;font-family:"IBM Plex Mono",monospace;font-size:.55rem;font-weight:600;color:var(--muted);
+  background:var(--bg2);border:1px solid var(--line-soft);border-radius:4px;padding:0 4px;margin-top:1px}
+.c-row span{color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.c-row.sheet span{color:var(--faint)}
+.card-link{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:var(--accent);font-weight:700;text-decoration:none;line-height:1.35}
+.card-link:hover{text-decoration:underline;color:var(--ink)}
+.card-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+
+/* wires */
+.trunk{fill:none;stroke:var(--tc);stroke-width:6;stroke-linecap:round;opacity:.9;transition:opacity .2s,stroke-width .2s}
+.branch{fill:none;stroke:var(--tc);stroke-width:4;stroke-linecap:round;opacity:.75;transition:opacity .2s,stroke-width .2s}
+.branch.subbranch{stroke-width:3;opacity:.68}
+.prog{fill:none;stroke:var(--comb);stroke-width:2;stroke-dasharray:2 8;stroke-linecap:round;opacity:.7}
+.content-link{fill:none;stroke:var(--xc);stroke-width:3.5;stroke-dasharray:4 6;opacity:.55;transition:opacity .2s,stroke-width .2s;stroke-linecap:round}
+.content-link.dim{opacity:.12}
+.content-link.hot{stroke-width:5;opacity:1}
+.transfer-link{fill:none;stroke:var(--xc);stroke-width:3;stroke-dasharray:10 8;opacity:0;transition:opacity .25s,stroke-width .2s;stroke-linecap:round}
+.transfer-link.show{opacity:.85}
+.transfer-link.dim{opacity:0}
+.transfer-link.hot{stroke-width:4;opacity:1}
+.trunk.dim,.branch.dim{opacity:.12}
+.trunk.hot{stroke-width:8;opacity:1}.branch.hot{stroke-width:6;opacity:1}
+
+/* focus */
+body.focusing .card:not(.hot):not(.rel){opacity:.28}
+body.focusing .gnode:not(.hot):not(.rel-col){opacity:.34}
+.card.hot{border-color:var(--zc);box-shadow:var(--shadow),0 0 0 2px color-mix(in srgb,var(--zc) 32%,transparent)}
+.gnode.hot,.gnode.pinned{box-shadow:var(--shadow),0 0 0 3px color-mix(in srgb,var(--zc) 40%,transparent)}
+
+/* panels */
+.panel{position:fixed;z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);backdrop-filter:blur(14px)}
+.topbar{left:18px;right:18px;top:16px;display:flex;align-items:center;gap:16px;padding:12px 16px;border-radius:20px}
+.brand{flex:1;min-width:0}
+.brand .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:.64rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+.brand h1{font-family:"Noto Serif TC",serif;font-size:clamp(1.05rem,1.9vw,1.4rem);font-weight:900;margin:2px 0 0;line-height:1.1}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tools{display:flex;gap:7px;align-items:center;flex:none}
+.tools button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;min-width:40px;height:40px;padding:0 12px;font:inherit;font-weight:800;font-size:.9rem;cursor:pointer;transition:border-color .15s}
+.tools button:hover{border-color:var(--accent)}
+.tools button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tools button[disabled]{opacity:.4;cursor:not-allowed}
+.tools .sep{width:1px;height:24px;background:var(--line)}
+.legend{left:18px;bottom:18px;width:min(300px,calc(100vw - 36px));padding:14px 16px;border-radius:18px;transition:width .2s,padding .2s,box-shadow .2s}
+.legend-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.legend h2{font-family:"Noto Serif TC",serif;font-size:.95rem;margin:0;font-weight:700;white-space:nowrap}
+.legend-title-short{display:none}
+.legend-toggle{flex:none;width:30px;height:30px;border:1px solid var(--line);border-radius:50%;background:var(--card);color:var(--ink);font:inherit;font-size:1.1rem;font-weight:700;line-height:1;cursor:pointer}
+.legend-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.legend-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.legend-toggle .toggle-closed{display:none}
+.legend.is-collapsed{width:108px;padding:10px 12px}
+.legend.is-collapsed .legend-head{margin-bottom:0}
+.legend.is-collapsed .legend-title-full{display:none}
+.legend.is-collapsed .legend-title-short{display:inline}
+.legend.is-collapsed .legend-content{display:none}
+.legend.is-collapsed .legend-toggle .toggle-open{display:none}
+.legend.is-collapsed .legend-toggle .toggle-closed{display:inline}
+.legend ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:3px 8px}
+.g-btn{display:flex;align-items:center;gap:8px;width:100%;border:0;background:none;color:var(--ink);font:inherit;font-size:.8rem;padding:4px 5px;border-radius:8px;cursor:pointer;text-align:left;transition:background .12s}
+.g-btn:hover,.g-btn.active{background:color-mix(in srgb,var(--gc) 15%,transparent)}
+.g-btn .bd{flex:none;width:16px;height:16px;border-radius:50%;background:var(--gc);color:#fff;font-size:.66rem;font-weight:900;display:grid;place-items:center;font-family:"Noto Serif TC",serif}
+.g-btn b{font-weight:800}.g-btn small{color:var(--faint);font-size:.72rem}
+.legend .note{margin:9px 0 0;padding-top:9px;border-top:1px dashed var(--line);color:var(--faint);font-size:.72rem;line-height:1.5}
+.legend .note b{color:var(--muted)}
+.line-key{display:grid;gap:5px;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);font-size:.7rem;color:var(--faint)}
+.line-key div{display:flex;align-items:center;gap:8px}
+.line-key .sample{width:28px;height:0;border-top:3px dashed var(--accent);flex:none}
+.line-key .sample.hierarchy{border-top-width:5px;border-top-style:solid}
+.line-key .sample.content{border-top-style:dashed}
+.line-key .sample.transfer{border-top-width:2px;border-top-style:dashed}
+.detail{right:18px;bottom:18px;width:min(325px,calc(100vw - 36px));max-height:58vh;overflow:auto;padding:16px 18px;border-radius:18px}
+.detail .dh{display:flex;align-items:center;gap:9px;margin-bottom:2px}
+.detail .dot{width:12px;height:12px;border-radius:50%;background:var(--dc,var(--accent));flex:none}
+.detail h2{font-family:"Noto Serif TC",serif;font-size:1.02rem;margin:0;font-weight:700}
+.detail .kicker{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:0 0 11px}
+.detail dl{display:grid;grid-template-columns:auto 1fr;gap:7px 12px;margin:0}
+.detail dt{font-family:"IBM Plex Mono",monospace;font-size:.66rem;font-weight:600;color:var(--faint);padding-top:2px;white-space:nowrap}
+.detail dd{margin:0;font-size:.88rem;color:var(--ink);line-height:1.4}
+.detail dd.book{font-family:"Noto Serif TC",serif;font-weight:700}
+.detail dd .prov{color:var(--faint);font-size:.78rem}
+.detail .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
+.detail .tag{font-size:.74rem;background:color-mix(in srgb,var(--accent) 12%,var(--card));color:var(--accent);border-radius:999px;padding:2px 8px;font-weight:700}
+.detail .xr{margin-top:12px;padding-top:11px;border-top:1px dashed var(--line)}
+.detail .xr .t{font-family:"IBM Plex Mono",monospace;font-size:.64rem;letter-spacing:.05em;color:var(--faint);margin-bottom:6px;text-transform:uppercase}
+.detail .rrow{display:flex;gap:8px;align-items:baseline;font-size:.83rem;color:var(--muted);margin-bottom:5px}
+.detail .rrow .sw{flex:none;width:14px;height:0;border-top:2px solid var(--rc);margin-top:9px}
+.detail .rrow .sw.transfer{border-top-style:dashed}
+.detail .rrow .rmeta{display:block;color:var(--faint);font-size:.68rem;margin-top:2px}
+.detail .rrow b{color:var(--ink);font-weight:700}
+.genre-trigger{display:inline;border:0;border-bottom:1px dashed color-mix(in srgb,var(--fc) 55%,var(--line));background:none;color:var(--fc);font:inherit;font-weight:700;line-height:1.4;padding:0;cursor:pointer;text-align:left}
+.genre-trigger:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.genre-trigger:focus-visible{outline:2px solid var(--fc);outline-offset:2px;border-radius:3px}
+.detail-link{color:var(--accent);font-weight:800;text-decoration:none;border-bottom:1px dashed color-mix(in srgb,var(--accent) 55%,var(--line))}
+.detail-link:hover{color:var(--ink);border-bottom-color:var(--ink)}
+.detail-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.help{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:19;display:flex;gap:15px;padding:8px 15px;border-radius:999px;background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow-sm);backdrop-filter:blur(12px);font-size:.78rem;color:var(--muted)}
+.help b{color:var(--ink);font-weight:700}
+.worksheet-backdrop{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:clamp(14px,4vw,40px);background:rgba(18,28,22,.42);backdrop-filter:blur(5px)}
+.worksheet-backdrop[hidden]{display:none}
+.worksheet-modal{width:min(760px,100%);max-height:min(88vh,820px);display:flex;flex-direction:column;overflow:hidden;background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 70px rgba(12,24,16,.28)}
+.worksheet-head{display:flex;align-items:flex-start;gap:16px;padding:20px 22px 14px;border-bottom:1px solid var(--line-soft);background:color-mix(in srgb,var(--card) 82%,transparent)}
+.worksheet-head>div{min-width:0;flex:1}
+.worksheet-kicker{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.1em;color:var(--accent);margin:0 0 5px;text-transform:uppercase}
+.worksheet-head h2{font-family:"Noto Serif TC",serif;font-size:clamp(1.2rem,3vw,1.55rem);line-height:1.25;margin:0;font-weight:900}
+.worksheet-close{flex:none;width:36px;height:36px;border:1px solid var(--line);border-radius:50%;background:var(--card);color:var(--ink);font-size:1.5rem;line-height:1;cursor:pointer}
+.worksheet-close:hover{border-color:var(--accent);color:var(--accent)}
+.worksheet-close:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.worksheet-body{overflow:auto;padding:17px 22px 22px}
+.worksheet-intro{margin:0 0 10px;color:var(--muted);font-size:.9rem;line-height:1.6}
+.worksheet-examples{margin:0 0 15px;padding:9px 12px;border-left:3px solid var(--accent);background:color-mix(in srgb,var(--accent) 8%,var(--card));color:var(--muted);font-size:.8rem;line-height:1.5}
+.worksheet-examples b{color:var(--ink)}
+.worksheet-sections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.worksheet-section,.worksheet-check{border:1px solid var(--line);border-radius:14px;padding:13px 14px;background:color-mix(in srgb,var(--card) 82%,transparent)}
+.worksheet-section h3,.worksheet-check h3{font-size:.9rem;margin:0 0 5px;font-weight:900;color:var(--ink)}
+.worksheet-section>p{margin:0 0 10px;color:var(--muted);font-size:.77rem;line-height:1.5}
+.worksheet-field{display:block;margin-top:9px}
+.worksheet-field>span{display:block;color:var(--muted);font-size:.77rem;font-weight:700;margin-bottom:4px}
+.worksheet-field textarea{display:block;width:100%;min-height:54px;resize:vertical;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;font-size:.82rem;line-height:1.45;padding:7px 8px;user-select:text;-webkit-user-select:text}
+.worksheet-field textarea:focus{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:1px;border-color:var(--accent)}
+.worksheet-field textarea::placeholder{color:var(--faint);opacity:.9}
+.worksheet-choices{display:grid;gap:5px;margin-top:8px}
+.worksheet-choice{display:flex;align-items:flex-start;gap:7px;color:var(--muted);font-size:.78rem;line-height:1.4;cursor:pointer}
+.worksheet-choice input{accent-color:var(--accent);margin:3px 0 0;flex:none}
+.worksheet-check{grid-column:1/-1;margin-top:0}
+.worksheet-checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px}
+.worksheet-foot{padding:10px 22px 13px;border-top:1px dashed var(--line);color:var(--faint);font-size:.7rem;line-height:1.45}
+@media (max-width:860px){.brand p{display:none}.detail{display:none}.help{display:none}}
+@media (max-width:620px){.worksheet-backdrop{padding:10px}.worksheet-head{padding:16px 16px 12px}.worksheet-body{padding:14px 16px 18px}.worksheet-sections{grid-template-columns:1fr}.worksheet-check{grid-column:auto}.worksheet-checklist{grid-template-columns:1fr}.worksheet-foot{padding:9px 16px 11px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="stage" id="stage"><div id="board"><svg id="wires" aria-hidden="true"></svg></div></div>
+
+<header class="panel topbar">
+  <div class="brand">
+    <span class="eyebrow">北園國小 · 閱讀磐石</span>
+    <h1>六年閱讀 PBL 課程總圖</h1>
+    <p>以年級展開：中心 → 六個年級 → 閱讀書卡 → 延伸課程．閱讀書卡標書名·文體·任務·學習單；點三至六年級的文體可開啟學習單。粗實線是課程階層，虛線是跨年級內容／PBL 脈絡延續。</p>
+  </div>
+  <div class="tools">
+    <button id="zoomOut" aria-label="縮小">−</button><button id="zoomIn" aria-label="放大">＋</button>
+    <button id="fit">全圖</button><button id="reset" disabled>取消聚焦</button>
+    <span class="sep"></span><button id="themeToggle" aria-label="切換深淺色">◐</button>
+  </div>
+</header>
+
+<aside class="panel legend" aria-label="年級圖例">
+  <div class="legend-head">
+    <h2 id="legendTitle"><span class="legend-title-full">六個年級（點擊聚焦）</span><span class="legend-title-short">圖例</span></h2>
+    <button class="legend-toggle" id="legendToggle" type="button" aria-expanded="true" aria-controls="legendContent" aria-label="收合年級圖例" title="收合圖例"><span class="toggle-open" aria-hidden="true">−</span><span class="toggle-closed" aria-hidden="true">＋</span></button>
+  </div>
+  <div class="legend-content" id="legendContent">
+    <ol id="gList"></ol>
+  <p class="note">粗實線＝課程階層；<b>虛線</b>＝跨年級內容／PBL 脈絡延續。虛線外框＝由閱讀文本分出的延伸課程。文體標「？」為建議待確認；一、二年級寫作課尚未涵蓋。</p>
+    <div class="line-key" aria-label="關聯線圖例">
+      <div><span class="sample hierarchy"></span><span>課程階層：中心 → 年級 → 閱讀書卡 → 延伸課程</span></div>
+      <div><span class="sample content"></span><span>內容／PBL 脈絡延續（虛線）</span></div>
+    </div>
+  </div>
+</aside>
+
+<section class="panel detail" id="detail" aria-live="polite"></section>
+<div class="help"><span><b>拖曳空白處</b>移動畫布</span><span><b>拖曳書卡</b>重新排版</span><span><b>滾輪</b>縮放</span><span><b>點年級</b>看整組</span><span><b>點文體</b>開學習單</span></div>
+
+<div class="worksheet-backdrop" id="worksheetBackdrop" hidden>
+  <section class="worksheet-modal" role="dialog" aria-modal="true" aria-labelledby="worksheetTitle" aria-describedby="worksheetIntro">
+    <header class="worksheet-head">
+      <div><p class="worksheet-kicker" id="worksheetGrade"></p><h2 id="worksheetTitle"></h2></div>
+      <button class="worksheet-close" id="worksheetClose" type="button" aria-label="關閉學習單">×</button>
+    </header>
+    <div class="worksheet-body" id="worksheetBody"></div>
+    <footer class="worksheet-foot" id="worksheetSource"></footer>
+  </section>
+</div>
+
+<script>
+/* ---------------- data ---------------- */
+const grades=[
+  {id:'g1',num:'一',stage:'發現',role:'小小發現家',ability:'觀察、指認、說明',color:'#4a86cf',ang:150,
+   domains:'國語・生活・健康',sdgs:'3・6・11・15',texts:'圖像／照片／簡易地圖',output:'校園／自然觀察作品',ind:['3-1','3-3','3-4','4-1']},
+  {id:'g2',num:'二',stage:'記錄',role:'生活記錄家',ability:'比較、分類、圖文表達',color:'#7c8d36',ang:90,
+   domains:'國語・生活・健體・藝文',sdgs:'3・11・12・15',texts:'圖文書／菜單／紀錄表',output:'生活記錄與文化比較作品',ind:['3-1','3-3','3-4','4-1']},
+  {id:'g3',num:'三',stage:'調查',role:'社區調查員',ability:'提問、摘要、讀圖表',color:'#3f8f90',ang:30,
+   domains:'國語・社會・自然・綜合',sdgs:'11・12・15',texts:'地圖／流程圖／訪談',output:'社區調查與數據圖表',ind:['3-1','3-2','3-3','3-4','4-1']},
+  {id:'g4',num:'四',stage:'詮釋',role:'在地說書人',ability:'訪談、多文本整合、敘事',color:'#7e6fb3',ang:330,
+   domains:'國語・社會・自然・資訊・藝術',sdgs:'6・11・12',texts:'老照片／水文圖／訪談／播客稿',output:'在地故事、多文本敘事／播客',ind:['2-3','3-1','3-2','3-3','3-4','4-1','4-3']},
+  {id:'g5',num:'五',stage:'分析',role:'永續設計師',ability:'評估證據、分析因果、查證',color:'#d38c30',ang:270,
+   domains:'國語・社會・自然・資訊・綜合',sdgs:'7・11・12・13',texts:'新聞／統計圖／能源資料／查證案例',output:'永續問題分析與解方設計',ind:['2-3','3-1','3-3','3-4','4-1','4-3']},
+  {id:'g6',num:'六',stage:'行動',role:'公民行動家',ability:'論證、立場比較、系統思考',color:'#c35663',ang:210,
+   domains:'國語・社會・自然・資訊・綜合',sdgs:'6・11・12・16・17',texts:'政策／觀點文章／數據／倡議文本',output:'公民提案與永續行動專題',ind:['2-3','3-1','3-3','3-4','4-1','4-3']}
+];
+const lines={life:{name:'生命觀察',kind:'content',cvar:'--l-life'},place:{name:'踏查脈絡',kind:'content',cvar:'--l-place'},park:{name:'社區記憶',kind:'content',cvar:'--l-park'},
+  eco:{name:'生態循環',kind:'content',cvar:'--l-eco'},civicq:{name:'訪談公共',kind:'content',cvar:'--l-civicq'},choice:{name:'公民選擇',kind:'content',cvar:'--l-choice'}};
+const lineColor={life:'#4f9d5b',place:'#2f88a8',park:'#c0568a',eco:'#c78a2a',civicq:'#7a6bbf',choice:'#d1544f'};
+// each grade's books; off=angular offset from grade angle, rad=radius from centre
+const books=[
+  {id:'g1-beetle', g:'g1', off:-24, rad:500, book:'《假裝我是獨角仙》', genre:'（低年級待補）',fam:'none',draft:false, task:'獨角仙復育／校園生命觀察', sheet:'如果我是獨角仙', themes:['life']},
+  {id:'g1-route',  g:'g1', off:+24, rad:500, book:'《1、2、3，上學去！》', genre:'（低年級待補）',fam:'none',draft:false, task:'學校／上學路線踏查與移景描寫', sheet:'我的上學路', themes:['place']},
+  {id:'g2-park',   g:'g2', off:-24, rad:730, book:'《全世界最特別的公園》', genre:'（低年級待補）',fam:'none',draft:false, task:'北社尾公園尋根／社區文物', sheet:'我眼中的北社尾公園', themes:['park']},
+  {id:'g2-seed',   g:'g2', off:+24, rad:730, book:'《種子探險家》', genre:'（低年級待補）',fam:'none',draft:false, task:'食農・種子探究', sheet:'一顆種子的旅行', themes:['eco']},
+  {id:'g3-walk',   g:'g3', off:-24, rad:500, book:'《社區散步去》', genre:'說明文·事物類',fam:'說',draft:true, worksheet:'g3-thing', task:'社區散步調查／路線流程圖', sheet:'社區散步記', themes:['place']},
+  {id:'g3-herb',   g:'g3', off:+24, rad:500, book:'《香草植物栽培筆記》', genre:'說明文·事物類',fam:'說',draft:true, worksheet:'g3-thing', task:'香草 × 蚊蟲探究', sheet:'我的香草觀察記', themes:['life']},
+  {id:'g4-history',g:'g4', off:-24, rad:730, book:'《大人的小學時代》', genre:'記敘文·敘事類',fam:'記',draft:true, worksheet:'g4-event', task:'耆老訪談／地方記憶', sheet:'阿公阿嬤的小學時代', themes:['park','civicq']},
+  {id:'g4-water',  g:'g4', off:+24, rad:730, book:'《水水三腳埤》', genre:'記敘文·記景類',fam:'記',draft:true, worksheet:'g4-scene', task:'嘉南大圳／水 × 稻米探究', sheet:'跟著一滴水去旅行', themes:['eco']},
+  {id:'g5-mayor',  g:'g5', off:-24, rad:500, book:'《如果我是市長》', genre:'議論文·如何型',fam:'議',draft:true, worksheet:'g5-how', task:'小市長選舉／校園政策提案', sheet:'如何讓我們的學校更好？', themes:['civicq','choice']},
+  {id:'g5-fact',   g:'g5', off:+24, rad:500, book:'《假消息終結戰》', genre:'議論文·為何型',fam:'議',draft:true, worksheet:'g5-why', task:'假資訊查核／證據評估', sheet:'為什麼查證資訊很重要？', themes:[]},
+  {id:'g6-vote',   g:'g6', off:-32, rad:730, book:'《去投票吧！》', genre:'議論文·談論型',fam:'議',draft:true, worksheet:'g6-talk', task:'公民提案／立場比較', sheet:'我想改變的一件事', themes:['choice']},
+  {id:'g6-biochar',g:'g6', parent:'g6-recycle', off:0,   rad:810, book:'北園稻作 × 稻梗／米糠', genre:'自然／生活課程',fam:'none',draft:false, type:'course', task:'火箭爐 × 稻梗／米糠碳化再利用', sheet:'火箭爐探究單', url:'https://bai-collab.github.io/rocket-stove-airflow-sim2/', urlLabel:'火箭爐空氣流動模擬', themes:['eco']},
+  {id:'g6-recycle',g:'g6', off:+32, rad:730, book:'《分好的垃圾去哪兒了？》', genre:'議論文·什麼型',fam:'議',draft:true, worksheet:'g6-what', task:'嘉義市回收中心踏查／回收分類觀察', sheet:'回收中心踏查紀錄單', themes:['place']},
+  {id:'g6-ai',     g:'g6', parent:'g6-recycle', off:+56, rad:870, book:'AI影像辨識', genre:'資訊課程',fam:'none',draft:false, type:'course', task:'影像分類模型／垃圾分流實驗', sheet:'AI影像辨識實驗單', themes:[]}
+];
+const linkPaths=[
+  {theme:'life',from:'g1-beetle',to:'g3-herb'},
+  {theme:'place',from:'g1-route',to:'g3-walk'},
+  {theme:'place',from:'g3-walk',to:'g6-recycle'},
+  {theme:'park',from:'g2-park',to:'g4-history'},
+  {theme:'eco',from:'g2-seed',to:'g4-water'},
+  {theme:'eco',from:'g4-water',to:'g6-biochar'},
+  {theme:'civicq',from:'g4-history',to:'g5-mayor'},
+  {theme:'choice',from:'g5-mayor',to:'g6-vote'}
+];
+const famVar={'記':'--f-記','說':'--f-說','議':'--f-議','應':'--f-應','none':'--f-none'};
+
+/* ---------------- writing worksheets ---------------- */
+const worksheetData={
+  'g3-thing':{grade:'三年級 · 說明文',title:'說明文・事物類學習單',goal:'把一個物品、場所、植物或製作過程說清楚，讓讀者能依著你的順序認識它。',examples:'我的學校、圖書館、種子的發芽、紙黏土的製作',source:'000.寫作課程設計.docx：說明文事物類',sections:[
+    {title:'1｜確定說明對象',instruction:'先決定要介紹什麼，再想想讀者最需要知道哪一件事。',fields:[{label:'我的題目',placeholder:'例如：校園圖書館、香草植物的生長'},{label:'我最想介紹的重點',placeholder:'它是什麼？哪個特色最值得讓讀者知道？'}]},
+    {title:'2｜蒐集材料',instruction:'可以從外形、構造、功能、特色，或生長／製作過程來找資料。',fields:[{label:'外形／構造',placeholder:'大小、顏色、形狀、部分和部分怎麼組合？'},{label:'功能／特色／過程',placeholder:'它有什麼用？怎麼生長或製作？'}]},
+    {title:'3｜安排說明順序',instruction:'選一種最容易讓讀者看懂的順序，先寫關鍵詞，再串成大綱。',choices:['先整體再局部','由外到內','按照時間／步驟','由主要到次要'],fields:[{label:'我的說明大綱',placeholder:'開頭介紹對象 → 中間依順序說明 → 結尾整理重點'}]},
+    {title:'4｜完成寫作草圖',instruction:'用完整句子試寫開頭、中間和結尾，注意詞語要準確。',fields:[{label:'開頭：我要先讓讀者知道……',placeholder:'我介紹的對象是……'},{label:'中間與結尾：接著……最後……',placeholder:'依順序寫出細節，最後整理特色或感受。'}]}
+  ],checklist:['我有清楚說明對象','我的內容有先後順序','我使用準確的詞語','讀者能依我的說明了解它']},
+  'g4-event':{grade:'四年級 · 記敘文',title:'記敘文・敘事類學習單',goal:'把一件事情寫得完整、有順序，讓讀者知道事情怎麼發生，也感受到人物的心情。',examples:'戶外教學、科博館參觀記、到超級市場',source:'000.寫作課程設計.docx：記敘文敘事類；001.記敘文(記人).docx：開頭與結尾方法',sections:[
+    {title:'1｜四要素與題目',instruction:'先找出人物、時間、地點和事情，想清楚這篇文章要寫哪一件事。',fields:[{label:'我的題目／主要事件',placeholder:'我想記錄哪一次經驗？'},{label:'人物・時間・地點',placeholder:'誰？什麼時候？在哪裡？還有什麼背景？'}]},
+    {title:'2｜排出事件順序',instruction:'用「起因 → 經過 → 特別事件 → 結果」整理，不要只列流水帳。',fields:[{label:'起因：為什麼發生？',placeholder:'我們為什麼出發／做這件事？'},{label:'經過與特別事件',placeholder:'先發生什麼？中間出現哪個最值得記住的畫面？'},{label:'結果：事情後來怎樣？',placeholder:'最後的結果和大家的反應是什麼？',rows:2}]},
+    {title:'3｜加入具體細節',instruction:'挑一兩個畫面，寫出人物的動作、對話或當時的感受。',fields:[{label:'動作／對話／看到的畫面',placeholder:'不要只寫「很好玩」，請寫出一個看得見的細節。'},{label:'我的心情變化',placeholder:'開始時……後來……最後……'}]},
+    {title:'4｜開頭與結尾',instruction:'開頭可以用原因法或破題法；結尾寫出感想、收穫或想記住的事。',fields:[{label:'開頭句',placeholder:'因為……所以我們……／那一天，我……'},{label:'結尾句',placeholder:'這次經驗讓我……；我最想記住的是……'}]}
+  ],checklist:['四要素交代清楚','事件順序前後連貫','至少有一個具體細節','結尾有自己的感想']},
+  'g4-scene':{grade:'四年級 · 記敘文',title:'記敘文・記景類學習單',goal:'用觀察的順序描寫一個地方，寫出景物、活動和自己的感受，而不是只堆砌形容詞。',examples:'美麗的校園、○○公園、○○海邊',source:'000.寫作課程設計.docx：記敘文記景類；002.記敘文(記事).docx：觀察與開頭結尾方法',sections:[
+    {title:'1｜選定景點與觀察位置',instruction:'先決定要寫哪個地方，以及你站在哪裡開始觀察。',fields:[{label:'我的景點／題目',placeholder:'例如：校園中庭、北社尾公園、三腳埤'},{label:'我看到的整體印象',placeholder:'這個地方給我的第一個感覺是什麼？'}]},
+    {title:'2｜記錄感官細節',instruction:'把看見、聽見、聞到、摸到的內容記下來，也留意人和動物的活動。',fields:[{label:'我看見的景物與活動',placeholder:'顏色、形狀、遠近、人物或動物正在做什麼？'},{label:'其他感官與感受',placeholder:'我聽見……聞到……摸到……因此覺得……'}]},
+    {title:'3｜安排移動與描寫順序',instruction:'選擇一種觀察路線，讓讀者跟著你的眼睛移動。',choices:['定點觀察','移步換景','由上而下','由遠而近'],fields:[{label:'我的景物大綱',placeholder:'先寫哪裡？接著把視線移到哪裡？最後停在哪個景物？'}]},
+    {title:'4｜開頭與結尾',instruction:'開頭可寫來到這裡的原因；結尾可寫懷念、讚美或想再來的心情。',fields:[{label:'開頭句',placeholder:'因為……我來到……；一走進……，我就看見……'},{label:'結尾句',placeholder:'離開時，我仍然想著……；我想把這個地方……'}]}
+  ],checklist:['我有選定觀察順序','景物描寫包含感官細節','我有寫人物或動物的活動','結尾有景物帶給我的感受']},
+  'g5-how':{grade:'五年級 · 議論文',title:'議論文・如何型學習單',goal:'針對一個問題提出可行的方法，說明「可以怎麼做」以及「為什麼這樣做有效」。',examples:'如何保護環境、怎樣做個孝順的好孩子、如何做一個好學生',source:'000.寫作課程設計.docx：議論文如何型',sections:[
+    {title:'1｜提出問題與目標',instruction:'先把題目改寫成一個需要解決的問題，明確說出你想改善什麼。',fields:[{label:'我要回答的問題',placeholder:'例如：如何讓我們的學校更好？'},{label:'我的主要主張',placeholder:'我認為可以透過……，讓……變得更好。'}]},
+    {title:'2｜提出三個方法',instruction:'每個方法都要寫清楚「做什麼、怎麼做」，避免只寫口號。',fields:[{label:'方法一',placeholder:'做什麼？具體怎麼做？'},{label:'方法二',placeholder:'做什麼？具體怎麼做？'},{label:'方法三',placeholder:'做什麼？具體怎麼做？'}]},
+    {title:'3｜補上理由與證據',instruction:'想一想每個方法為什麼有用，可以用生活經驗、觀察紀錄或查到的資料支持。',fields:[{label:'最重要的方法與理由',placeholder:'我最推薦……，因為……'},{label:'我的例子／資料',placeholder:'我看過、做過或查到的證據是……'}]},
+    {title:'4｜結論與行動',instruction:'最後整理你的主張，並告訴讀者下一步可以怎麼開始。',fields:[{label:'結論',placeholder:'只要大家願意……，就能……'},{label:'我可以先做的行動',placeholder:'明天開始，我會……'}]}
+  ],checklist:['我有清楚回答「如何做」','至少提出三個具體方法','每個方法都有理由或例子','結尾能回到問題並提出行動']},
+  'g5-why':{grade:'五年級 · 議論文',title:'議論文・為何型學習單',goal:'針對一個主張回答「為什麼重要」，用幾個理由和例子讓讀者理解你的判斷。',examples:'讀書的重要、守信的重要、合作的重要',source:'000.寫作課程設計.docx：議論文為何型',sections:[
+    {title:'1｜先說出我的答案',instruction:'不要一開始就列理由，先用一句話表明你的立場。',fields:[{label:'我的題目',placeholder:'例如：為什麼合作很重要？'},{label:'我的答案／主張',placeholder:'我認為……很重要，因為……'}]},
+    {title:'2｜找出三個理由',instruction:'理由要彼此不同，可以從自己、他人、團體或長期影響來想。',fields:[{label:'理由一',placeholder:'第一個原因是……'},{label:'理由二',placeholder:'第二個原因是……'},{label:'理由三',placeholder:'第三個原因是……'}]},
+    {title:'3｜用例子把理由說清楚',instruction:'每個重要理由都配一個生活經驗、觀察或資料，讓抽象的話變具體。',fields:[{label:'最有說服力的例子',placeholder:'哪一件事能證明我的想法？'},{label:'如果忽略它，可能會怎樣？',placeholder:'這件事可能造成的結果或影響是……'}]},
+    {title:'4｜整理結論',instruction:'重申你的答案，也可以邀請讀者一起思考或採取行動。',fields:[{label:'我的結論',placeholder:'所以……不只是……，也是……'},{label:'給讀者的一句話',placeholder:'我希望大家……'}]}
+  ],checklist:['開頭有清楚表明立場','理由至少有三個且不重複','理由有具體例子支持','結論有回應「為什麼」']},
+  'g6-talk':{grade:'六年級 · 議論文',title:'議論文・談論型學習單',goal:'針對一個議題提出自己的看法，兼顧定義、理由、例證和不同觀點，形成有層次的論證。',examples:'談謙虛、論守時、談環境保護',source:'000.寫作課程設計.docx：議論文談論型',sections:[
+    {title:'1｜界定議題與立場',instruction:'先說明題目中的關鍵詞，再表明你支持、反對或主張的方向。',fields:[{label:'我要談的議題',placeholder:'例如：守時、謙虛或環境保護'},{label:'關鍵詞是什麼？我的立場是？',placeholder:'我所說的「……」是指……；我主張……'}]},
+    {title:'2｜建立理由與證據',instruction:'用不同角度安排理由，並替每個理由找一個能支持它的例子。',fields:[{label:'理由一＋證據',placeholder:'從自己或生活經驗來說……'},{label:'理由二＋證據',placeholder:'從他人、團體或社會來說……'},{label:'理由三＋證據',placeholder:'從長期影響或未來來說……'}]},
+    {title:'3｜回應另一種看法',instruction:'想想別人可能怎麼看，再說明你如何回應，文章會更有說服力。',fields:[{label:'可能的不同意見',placeholder:'有人可能會說……'},{label:'我的回應',placeholder:'我理解這個想法，但是……；因為……'}]},
+    {title:'4｜收束成行動',instruction:'結尾不要只是重複，可以提出具體做法或邀請讀者一起改變。',fields:[{label:'我的結論',placeholder:'綜合以上理由，我認為……'},{label:'我希望讀者採取的行動',placeholder:'從今天開始，我們可以……'}]}
+  ],checklist:['我有先界定議題','理由有不同角度與證據','我有回應不同看法','結尾提出清楚的方向或行動']},
+  'g6-what':{grade:'六年級 · 議論文',title:'議論文・什麼型學習單',goal:'從一本書、一句話或一件事找出啟示，說明它到底告訴了你什麼，以及這個啟示如何影響你的行動。',examples:'一本書的啟示、一句話的啟示、一件事的啟示',source:'000.寫作課程設計.docx：議論文什麼型',sections:[
+    {title:'1｜選擇材料並摘要',instruction:'先交代啟示來自哪裡，但只摘要和主題有關的部分。',fields:[{label:'我的材料來源',placeholder:'書名／句子／事件：……'},{label:'用幾句話說明內容',placeholder:'這本書、這句話或這件事主要發生了什麼？'}]},
+    {title:'2｜抓住關鍵轉折',instruction:'找出最讓你停下來思考的情節、句子或細節。',fields:[{label:'關鍵內容',placeholder:'哪一個畫面或句子最重要？'},{label:'它讓我想到什麼？',placeholder:'我原本怎麼想？讀完或經歷後有什麼改變？'}]},
+    {title:'3｜說清楚「啟示是什麼」',instruction:'把啟示寫成完整主張，不要只寫「要努力」「要勇敢」等空泛句子。',fields:[{label:'我的啟示／主張',placeholder:'我得到的啟示是……，因為……'},{label:'生活中的對應例子',placeholder:'我在哪一次經驗中看見或用到這個啟示？'}]},
+    {title:'4｜連到未來行動',instruction:'想一個可觀察的改變，讓啟示不只停在感想。',fields:[{label:'我接下來要怎麼做',placeholder:'遇到……時，我會……'},{label:'給自己的提醒',placeholder:'我想用一句話提醒自己……'}]}
+  ],checklist:['我有交代材料來源','摘要沒有離題','啟示是清楚完整的主張','我有連結自己的經驗或行動']},
+  'g6-self':{grade:'六年級 · 議論文',title:'議論文・以我為主型學習單',goal:'從「我」和一個主題的關係出發，整理經驗、影響與立場，寫出有個人觀點的文章。',examples:'我與報紙、電腦與我、音樂與我',source:'000.寫作課程設計.docx：議論文以我為主型',sections:[
+    {title:'1｜定義我和主題的關係',instruction:'先說明這個主題在你的生活中扮演什麼角色。',fields:[{label:'我的題目',placeholder:'例如：電腦與我、音樂與我'},{label:'它什麼時候出現在我的生活？',placeholder:'我通常在什麼情況下接觸它？'}]},
+    {title:'2｜整理經驗與用途',instruction:'不要只列喜歡或不喜歡，請寫一個具體經驗和實際用途。',fields:[{label:'我的具體經驗',placeholder:'有一次，我因為……所以……'},{label:'它帶給我的幫助／改變',placeholder:'它讓我學會、完成或改變了什麼？'}]},
+    {title:'3｜看見影響與疑慮',instruction:'同時思考好處、限制或可能的問題，文章會更完整。',fields:[{label:'正面影響',placeholder:'它對我的學習、生活或人際關係有什麼幫助？'},{label:'需要注意的地方',placeholder:'可能的風險、限制或我仍然擔心的事是……'}]},
+    {title:'4｜形成我的立場',instruction:'最後回答「我怎麼看」，並提出一個自己做得到的使用原則。',fields:[{label:'我的立場與理由',placeholder:'我認為……可以／不可以，因為……'},{label:'我的使用原則／行動',placeholder:'今後我會……，也會注意……'}]}
+  ],checklist:['全文從自己的經驗出發','有具體事件或例子','同時看見幫助與限制','最後清楚表明自己的立場']}
+};
+
+const worksheetBackdrop=document.getElementById('worksheetBackdrop');
+const worksheetClose=document.getElementById('worksheetClose');
+const worksheetGrade=document.getElementById('worksheetGrade');
+const worksheetTitle=document.getElementById('worksheetTitle');
+const worksheetBody=document.getElementById('worksheetBody');
+const worksheetSource=document.getElementById('worksheetSource');
+const html=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let worksheetLastFocus=null;
+function renderWorksheet(w){
+  worksheetBody.innerHTML=`<p class="worksheet-intro" id="worksheetIntro">${html(w.goal)}</p>
+    <p class="worksheet-examples"><b>教材例題：</b>${html(w.examples)}</p>
+    <div class="worksheet-sections">${w.sections.map(section=>`<section class="worksheet-section"><h3>${html(section.title)}</h3><p>${html(section.instruction)}</p>
+      ${section.choices?`<div class="worksheet-choices">${section.choices.map(choice=>`<label class="worksheet-choice"><input type="checkbox"><span>${html(choice)}</span></label>`).join('')}</div>`:''}
+      ${section.fields.map(field=>`<label class="worksheet-field"><span>${html(field.label)}</span><textarea rows="${field.rows||2}" placeholder="${html(field.placeholder)}"></textarea></label>`).join('')}</section>`).join('')}
+      <section class="worksheet-check"><h3>完成檢查</h3><div class="worksheet-checklist">${w.checklist.map(item=>`<label class="worksheet-choice"><input type="checkbox"><span>${html(item)}</span></label>`).join('')}</div></section>
+    </div>`;
+  worksheetSource.textContent=`內容依 ${w.source} 整理；圖上的文體若標示「？」仍請以正式寫作課程確認。`;
+}
+function openWorksheet(key,trigger){const w=worksheetData[key];if(!w)return;worksheetLastFocus=trigger||document.activeElement;worksheetGrade.textContent=w.grade;worksheetTitle.textContent=w.title;renderWorksheet(w);worksheetBackdrop.hidden=false;worksheetClose.focus();}
+function closeWorksheet(){if(worksheetBackdrop.hidden)return;worksheetBackdrop.hidden=true;worksheetBody.innerHTML='';if(worksheetLastFocus&&worksheetLastFocus.isConnected)worksheetLastFocus.focus();worksheetLastFocus=null;}
+worksheetClose.addEventListener('click',closeWorksheet);
+worksheetBackdrop.addEventListener('click',e=>{if(e.target===worksheetBackdrop)closeWorksheet();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!worksheetBackdrop.hidden){e.preventDefault();closeWorksheet();}});
+
+const CX=1010,CY=1010,RH=270;
+const bookById=new Map(books.map(b=>[b.id,b]));
+const gradeById=new Map(grades.map(g=>[g.id,g]));
+const neigh=new Map(books.map(b=>[b.id,new Set()]));
+const relationsOf=new Map(books.map(b=>[b.id,[]]));
+const childrenOf=new Map(books.map(b=>[b.id,[]]));
+books.forEach(b=>{if(b.parent&&childrenOf.has(b.parent))childrenOf.get(b.parent).push(b.id);});
+const bookPositions=new Map();
+const cssv=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function gpos(g){const r=g.ang*Math.PI/180;return{x:CX+RH*Math.cos(r),y:CY-RH*Math.sin(r)};}
+function bpos(b){const moved=bookPositions.get(b.id);if(moved)return moved;const g=gradeById.get(b.g),r=(g.ang+b.off)*Math.PI/180;return{x:CX+b.rad*Math.cos(r),y:CY-b.rad*Math.sin(r)};}
+function relationPath(fromId,toId){const a=bpos(bookById.get(fromId)),b=bpos(bookById.get(toId));
+  const mx=(a.x+b.x)/2,my=(a.y+b.y)/2,dx=b.x-a.x,dy=b.y-a.y,nx=-dy,ny=dx,L=Math.hypot(nx,ny)||1;
+  return `M ${a.x} ${a.y} Q ${mx+nx/L*70} ${my+ny/L*70} ${b.x} ${b.y}`;}
+
+/* ---------------- build ---------------- */
+const board=document.getElementById('board');board.style.width=CX*2+'px';board.style.height=CY*2+'px';
+const NS='http://www.w3.org/2000/svg';const svg=document.getElementById('wires');svg.setAttribute('width',CX*2);svg.setAttribute('height',CY*2);
+const mk=(t,a={})=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);return n;};
+
+// progression hexagon (faint, order g1..g6)
+const hp=grades.map(g=>gpos(g));
+svg.appendChild(mk('path',{class:'prog',d:'M '+hp.map(p=>`${p.x} ${p.y}`).join(' L ')+' Z'}));
+
+// trunks (centre -> grade) & branches (grade -> book)
+const trunkEls=new Map(),branchEls=new Map();
+grades.forEach(g=>{const p=gpos(g);
+  const t=mk('path',{class:'trunk',d:`M ${CX} ${CY} L ${p.x} ${p.y}`});t.style.setProperty('--tc',g.color);svg.appendChild(t);trunkEls.set(g.id,t);
+  books.filter(b=>b.g===g.id).forEach(b=>{const q=bpos(b);
+    const a=b.parent?bpos(bookById.get(b.parent)):p;
+    const br=mk('path',{class:b.parent?'branch subbranch':'branch',d:`M ${a.x} ${a.y} L ${q.x} ${q.y}`});br.style.setProperty('--tc',g.color);svg.appendChild(br);branchEls.set(b.id,br);});
+});
+// cross-grade and PBL branch relations: content continuity is visible; competency transfer appears on focus
+const xEls=[];
+linkPaths.forEach(({theme,from,to})=>{
+  const meta=lines[theme],pathClass=meta.kind==='competency'?'transfer-link':'content-link';
+  const p=mk('path',{class:pathClass,d:relationPath(from,to)});p.style.setProperty('--xc',lineColor[theme]);svg.appendChild(p);
+  const o={theme,kind:meta.kind,label:meta.name,from,to,el:p};xEls.push(o);
+  neigh.get(from).add(to);neigh.get(to).add(from);
+  relationsOf.get(from).push(o);relationsOf.get(to).push(o);
+});
+function updateBranchGeometry(id){const b=bookById.get(id),q=bpos(b),g=gradeById.get(b.g),a=b.parent?bpos(bookById.get(b.parent)):gpos(g),branch=branchEls.get(id);
+  if(branch)branch.setAttribute('d',`M ${a.x} ${a.y} L ${q.x} ${q.y}`);
+}
+function updateBookGeometry(id){updateBranchGeometry(id);(childrenOf.get(id)||[]).forEach(childId=>updateBranchGeometry(childId));
+  xEls.forEach(o=>{if(o.from===id||o.to===id)o.el.setAttribute('d',relationPath(o.from,o.to));});
+}
+
+// centre hub
+const hub=document.createElement('div');hub.className='hub';hub.style.left=CX+'px';hub.style.top=CY+'px';
+hub.innerHTML=`<span class="k">核心</span><b>北園六年<br>閱讀 PBL</b><small>讀在地 · 會探究 · 能行動</small>`;
+hub.addEventListener('click',e=>{e.stopPropagation();resetFocus();});board.appendChild(hub);
+
+// grade nodes
+const gEls=new Map();
+grades.forEach(g=>{const p=gpos(g);const el=document.createElement('div');el.className='gnode';el.style.left=p.x+'px';el.style.top=p.y+'px';
+  el.style.setProperty('--zc',g.color);el.tabIndex=0;el.dataset.grade=g.id;el.setAttribute('role','button');
+  el.innerHTML=`<div class="gn">${g.num}</div><div class="gs">${g.stage}</div><div class="gr">${g.role}</div>`;
+  el.addEventListener('click',e=>{e.stopPropagation();toggleGrade(g.id);});
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleGrade(g.id);}});
+  el.addEventListener('mouseenter',()=>{if(!locked)showGrade(g.id);});
+  el.addEventListener('mouseleave',hoverOut);
+  board.appendChild(el);gEls.set(g.id,el);});
+
+// book cards
+const cardEls=new Map();
+books.forEach(b=>{const p=bpos(b),g=gradeById.get(b.g);
+  const dots=b.themes.map(t=>`<span class="tdot" style="--dc:${lineColor[t]}"></span>`).join('');
+  const genreClass=`genre ${b.fam==='none'?'none':''}${b.worksheet?' genre-action':''}`;
+  const genreAttr=b.worksheet?` role="button" tabindex="0" data-worksheet="${b.worksheet}" aria-label="開啟${g.num}年級${b.genre}學習單"`:'';
+  const taskTag=b.type==='course'?'課程':'任務';
+  const resourceRow=b.url?`<div class="c-row link-row"><span class="c-tag">資源</span><a class="card-link" href="${b.url}" target="_blank" rel="noopener noreferrer" aria-label="${b.urlLabel}（開新分頁）">${b.urlLabel} ↗</a></div>`:'';
+  const el=document.createElement('div');el.className=`card${b.type==='course'?' course-card':''}`;el.style.left=p.x+'px';el.style.top=p.y+'px';el.style.setProperty('--zc',g.color);
+  el.tabIndex=0;el.dataset.book=b.id;el.setAttribute('role','button');
+  el.innerHTML=`<div class="c-topline"><span class="${genreClass}" style="--fc:${cssv(famVar[b.fam])}"${genreAttr}>${b.genre}${b.draft?'<span class="qm">?</span>':''}</span><span class="themedots">${dots}</span></div>
+    <p class="c-book">${b.book}</p>
+    <div class="c-meta"><div class="c-row"><span class="c-tag">${taskTag}</span><span>${b.task}</span></div>
+    <div class="c-row sheet"><span class="c-tag">學習單</span><span>${b.sheet}</span></div>${resourceRow}</div>`;
+  el.addEventListener('pointerdown',e=>startCardDrag(e,b.id));
+  el.addEventListener('click',e=>{e.stopPropagation();if(suppressClick){suppressClick=false;return;}toggleBook(b.id);});
+  if(b.worksheet){const trigger=el.querySelector('.genre-action');
+    const activate=e=>{e.preventDefault();e.stopPropagation();openWorksheet(b.worksheet,trigger);};
+    trigger.addEventListener('click',activate);
+    trigger.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){activate(e);}});
+  }
+  el.addEventListener('mouseenter',()=>{if(!locked)showBook(b.id);});
+  el.addEventListener('mouseleave',hoverOut);
+  el.addEventListener('focus',()=>{if(!locked)showBook(b.id);});
+  board.appendChild(el);cardEls.set(b.id,el);});
+
+/* ---------------- legend ---------------- */
+const gList=document.getElementById('gList');
+const legend=document.querySelector('.legend');const legendToggle=document.getElementById('legendToggle');
+function setLegendCollapsed(collapsed){legend.classList.toggle('is-collapsed',collapsed);legendToggle.setAttribute('aria-expanded',String(!collapsed));legendToggle.setAttribute('aria-label',collapsed?'展開年級圖例':'收合年級圖例');legendToggle.title=collapsed?'展開圖例':'收合圖例';}
+legendToggle.addEventListener('click',()=>setLegendCollapsed(!legend.classList.contains('is-collapsed')));
+grades.forEach(g=>{const li=document.createElement('li');const btn=document.createElement('button');
+  btn.className='g-btn';btn.dataset.grade=g.id;btn.style.setProperty('--gc',g.color);
+  btn.innerHTML=`<span class="bd">${g.num}</span><b>${g.stage}</b> <small>${g.role}</small>`;
+  btn.addEventListener('click',()=>{locked==='gr:'+g.id?resetFocus():toggleGrade(g.id);});
+  btn.addEventListener('mouseenter',()=>{if(!locked)showGrade(g.id);});
+  btn.addEventListener('mouseleave',hoverOut);
+  li.appendChild(btn);gList.appendChild(li);});
+
+/* ---------------- focus ---------------- */
+let locked=null;const detail=document.getElementById('detail');const resetBtn=document.getElementById('reset');
+function clearX(){xEls.forEach(o=>o.el.classList.remove('show','hot','dim'));}
+function setFocus(active){const on=!!active;document.body.classList.toggle('focusing',on);
+  cardEls.forEach((el,id)=>{el.classList.toggle('hot',on&&active.hot.has(id));el.classList.toggle('rel',on&&active.rel.has(id));});
+  gEls.forEach((el,gid)=>{el.classList.toggle('hot',on&&active.hotG.has(gid));el.classList.toggle('rel-col',on&&active.grades.has(gid));});
+  trunkEls.forEach((el,gid)=>{el.classList.toggle('dim',on&&!active.grades.has(gid));el.classList.toggle('hot',on&&active.hotG.has(gid));});
+  branchEls.forEach((el,id)=>{const vis=!on||active.hot.has(id)||active.rel.has(id);el.classList.toggle('dim',on&&!vis);el.classList.toggle('hot',on&&active.hot.has(id));});
+  clearX();if(on&&active.xshow)xEls.forEach(o=>{const related=active.xshow(o);o.el.classList.toggle('hot',related);o.el.classList.toggle('dim',!related);if(related&&o.kind==='competency')o.el.classList.add('show');});
+  gList.querySelectorAll('.g-btn').forEach(b=>b.classList.toggle('active',on&&active.hotG.has(b.dataset.grade)));}
+const gradesOf=set=>new Set([...set].map(id=>bookById.get(id).g));
+function bookNeighbors(id){const rel=new Set(neigh.get(id));const b=bookById.get(id);if(b.parent)rel.add(b.parent);(childrenOf.get(id)||[]).forEach(childId=>rel.add(childId));return rel;}
+function showBook(id){const rel=bookNeighbors(id),all=new Set([id,...rel]);
+  setFocus({hot:new Set([id]),rel,hotG:new Set([bookById.get(id).g]),grades:gradesOf(all),xshow:o=>o.from===id||o.to===id});renderBook(id);}
+function showGrade(id){const own=new Set(books.filter(b=>b.g===id).map(b=>b.id)),rel=new Set();own.forEach(i=>neigh.get(i).forEach(n=>rel.add(n)));
+  setFocus({hot:own,rel,hotG:new Set([id]),grades:new Set([id,...gradesOf(new Set([...own,...rel]))]),xshow:o=>own.has(o.from)||own.has(o.to)});renderGrade(id);}
+function toggleBook(id){locked==='bk:'+id?resetFocus():(showBook(id),setLock('bk:'+id));}
+function toggleGrade(id){locked==='gr:'+id?resetFocus():(showGrade(id),setLock('gr:'+id));}
+function setLock(k){locked=k;resetBtn.disabled=false;}
+function hoverOut(){if(!locked){setFocus(null);renderIntro();}}
+function resetFocus(){locked=null;resetBtn.disabled=true;setFocus(null);renderIntro();}
+resetBtn.addEventListener('click',resetFocus);
+
+/* ---------------- detail ---------------- */
+detail.addEventListener('click',e=>{const trigger=e.target.closest('.genre-trigger');if(!trigger)return;e.stopPropagation();openWorksheet(trigger.dataset.worksheet,trigger);});
+function rrow(rel,id){const other=rel.from===id?rel.to:rel.from,b=bookById.get(other),g=gradeById.get(b.g),rc=lineColor[rel.theme],kind=rel.kind==='competency'?'能力遷移':'內容／PBL 延續';
+  return `<div class="rrow" style="--rc:${rc}"><span class="sw ${rel.kind==='competency'?'transfer':''}"></span><span><b>${g.num}年</b>｜${b.book}<small class="rmeta">${rel.label} · ${kind}</small></span></div>`;}
+function renderBook(id){const b=bookById.get(id),g=gradeById.get(b.g);
+  const ln=b.themes.map(t=>`<span style="color:${lineColor[t]};font-weight:700">${lines[t].name}</span>`).join(' · ')||'—';
+  const rels=relationsOf.get(id),types=[...new Set(rels.map(rel=>rel.kind==='competency'?'能力遷移':'內容／PBL 延續'))].join('、')||'—';
+  const genre=b.draft?`${b.genre} <span class="prov">· 建議待確認</span>`:b.genre;
+  const genreDisplay=b.worksheet?`<button type="button" class="genre-trigger" data-worksheet="${b.worksheet}" style="--fc:${cssv(famVar[b.fam])}" aria-label="開啟${g.num}年級${b.genre}學習單">${genre}</button>`:genre;
+  const parent=b.parent?bookById.get(b.parent):null,children=books.filter(child=>child.parent===b.id);
+  const nodeType=b.type==='course'?'由閱讀文本分出的延伸課程':'閱讀文本',categoryLabel=b.type==='course'?'課程類型':'作文文體';
+  const resource=b.url?`<dt>互動資源</dt><dd><a class="detail-link" href="${b.url}" target="_blank" rel="noopener noreferrer">${b.urlLabel} ↗</a></dd>`:'';
+  detail.innerHTML=`<div class="dh"><span class="dot" style="--dc:${g.color}"></span><h2>${b.book}</h2></div>
+    <p class="kicker">${g.num}年級 · ${g.stage}</p>
+    <dl><dt>節點類型</dt><dd>${nodeType}</dd><dt>${categoryLabel}</dt><dd>${genreDisplay}</dd><dt>${b.type==='course'?'課程任務':'學生任務'}</dt><dd>${b.task}</dd><dt>學習單</dt><dd class="book">${b.sheet}</dd>${resource}<dt>關聯類型</dt><dd>${types}</dd><dt>主題</dt><dd>${ln}</dd></dl>
+    ${parent?`<div class="xr"><div class="t">上一層來源</div><div class="rrow" style="--rc:${g.color}"><span class="sw"></span><span>${parent.book}<small class="rmeta">閱讀文本 → 本課程</small></span></div></div>`:''}
+    ${children.length?`<div class="xr"><div class="t">下一層延伸課程</div>${children.map(child=>`<div class="rrow" style="--rc:${g.color}"><span class="sw"></span><span>${child.book}<small class="rmeta">由本閱讀文本分出</small></span></div>`).join('')}</div>`:''}
+    ${rels.length?`<div class="xr"><div class="t">跨年級關聯</div>${rels.map(rel=>rrow(rel,id)).join('')}</div>`:''}`;}
+function renderGrade(id){const g=gradeById.get(id),bs=books.filter(b=>b.g===id&&!b.parent),cs=books.filter(b=>b.g===id&&b.parent);
+  detail.innerHTML=`<div class="dh"><span class="dot" style="--dc:${g.color}"></span><h2>${g.num}年級｜${g.stage}</h2></div>
+    <p class="kicker">角色 · ${g.role}</p>
+    <dl><dt>核心能力</dt><dd>${g.ability}</dd><dt>跨域領域</dt><dd>${g.domains}</dd><dt>多元文本</dt><dd>${g.texts}</dd><dt>SDGs</dt><dd>${g.sdgs}</dd><dt>代表成果</dt><dd>${g.output}</dd><dt>對應指標</dt><dd><div class="tags">${g.ind.map(x=>`<span class="tag">${x}</span>`).join('')}</div></dd></dl>
+    <div class="xr"><div class="t">本年級閱讀書單</div>${bs.map(b=>`<div class="rrow" style="--rc:${g.color}"><span class="sw"></span><span>${b.book}</span></div>`).join('')}</div>
+    ${cs.length?`<div class="xr"><div class="t">由閱讀文本分出的延伸課程</div>${cs.map(b=>`<div class="rrow" style="--rc:${g.color}"><span class="sw"></span><span>${b.book}<small class="rmeta">上一層：${bookById.get(b.parent).book}</small></span></div>`).join('')}</div>`:''}`;}
+function renderIntro(){detail.innerHTML=`<div class="dh"><span class="dot"></span><h2>怎麼看這張圖</h2></div>
+  <p class="kicker">以年級展開 · 發現到行動</p>
+  <p style="margin:0 0 8px;color:var(--muted);font-size:.88rem;line-height:1.55">中心是課程核心，往外接到<b style="color:var(--ink)">六個年級</b>（發現→記錄→調查→詮釋→分析→行動），每個年級再展開自己的<b style="color:var(--ink)">閱讀書單</b>；閱讀文本還可以用粗實線分出延伸課程。</p>
+  <p style="margin:0 0 8px;color:var(--muted);font-size:.88rem;line-height:1.55">閱讀書卡上的作文文體可開啟可直接填寫的學習單；像「火箭爐」和「AI影像辨識」這類非閱讀課程，會放在「分好的垃圾去哪兒了？」的下一層。跨年級的踏查與 PBL 發展脈絡用<b style="color:var(--ink)">虛線</b>表示。</p>
+  <p style="margin:0;color:var(--faint);font-size:.8rem;line-height:1.5">文體標「？」為建議值，待寫作課程確認；一二年級寫作課尚未涵蓋。</p>`;}
+
+/* ---------------- pan / zoom ---------------- */
+const stage=document.getElementById('stage');const view={x:0,y:0,k:1};
+function apply(){board.style.transform=`translate(${view.x}px,${view.y}px) scale(${view.k})`;}
+function fit(){const W=CX*2,H=CY*2,sw=stage.clientWidth,sh=stage.clientHeight;const k=Math.min((sw-40)/W,(sh-120)/H,1);view.k=Math.max(.2,k);view.x=(sw-W*view.k)/2;view.y=(sh-H*view.k)/2+28;apply();}
+function zoomAt(cx,cy,f){const nk=Math.max(.2,Math.min(2.4,view.k*f)),r=nk/view.k;view.x=cx-(cx-view.x)*r;view.y=cy-(cy-view.y)*r;view.k=nk;apply();}
+document.getElementById('zoomIn').addEventListener('click',()=>zoomAt(stage.clientWidth/2,stage.clientHeight/2,1.22));
+document.getElementById('zoomOut').addEventListener('click',()=>zoomAt(stage.clientWidth/2,stage.clientHeight/2,.82));
+document.getElementById('fit').addEventListener('click',fit);
+stage.addEventListener('wheel',e=>{e.preventDefault();const r=stage.getBoundingClientRect();zoomAt(e.clientX-r.left,e.clientY-r.top,e.deltaY<0?1.1:.9);},{passive:false});
+let drag=null,suppressClick=false,cardDrag=null;
+function boardPoint(clientX,clientY){const r=stage.getBoundingClientRect();return{x:(clientX-r.left-view.x)/view.k,y:(clientY-r.top-view.y)/view.k};}
+function startCardDrag(e,id){if(e.button!==0||e.target.closest('.genre-action,.card-link'))return;const el=cardEls.get(id),p=bpos(bookById.get(id)),start=boardPoint(e.clientX,e.clientY);
+  cardDrag={id,pointerId:e.pointerId,el,startPointerX:start.x,startPointerY:start.y,startX:p.x,startY:p.y,moved:false};el.classList.add('dragging');el.setPointerCapture?.(e.pointerId);e.preventDefault();e.stopPropagation();}
+function moveCardDrag(e){if(!cardDrag||e.pointerId!==cardDrag.pointerId)return;e.preventDefault();const now=boardPoint(e.clientX,e.clientY),dx=now.x-cardDrag.startPointerX,dy=now.y-cardDrag.startPointerY;
+  if(!cardDrag.moved&&Math.abs(dx)+Math.abs(dy)<=4)return;cardDrag.moved=true;
+  const x=Math.max(100,Math.min(CX*2-100,cardDrag.startX+dx)),y=Math.max(62,Math.min(CY*2-62,cardDrag.startY+dy));bookPositions.set(cardDrag.id,{x,y});cardDrag.el.style.left=x+'px';cardDrag.el.style.top=y+'px';updateBookGeometry(cardDrag.id);}
+function endCardDrag(e){if(!cardDrag||e.pointerId!==cardDrag.pointerId)return;const active=cardDrag;if(active.moved)suppressClick=true;active.el.classList.remove('dragging');active.el.releasePointerCapture?.(e.pointerId);cardDrag=null;}
+window.addEventListener('pointermove',moveCardDrag,{passive:false});
+window.addEventListener('pointerup',endCardDrag);
+window.addEventListener('pointercancel',endCardDrag);
+const endDrag=()=>{if(drag&&drag.moved)suppressClick=true;drag=null;stage.classList.remove('dragging');};
+stage.addEventListener('pointerdown',e=>{if(e.target.closest('.card,.gnode,.g-btn,.hub'))return;e.preventDefault();drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y,moved:false};stage.setPointerCapture(e.pointerId);stage.classList.add('dragging');});
+stage.addEventListener('pointermove',e=>{if(!drag)return;e.preventDefault();const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>4)drag.moved=true;view.x=drag.vx+dx;view.y=drag.vy+dy;apply();});
+stage.addEventListener('pointerup',endDrag);
+stage.addEventListener('pointercancel',endDrag);
+stage.addEventListener('lostpointercapture',endDrag);
+stage.addEventListener('click',e=>{if(suppressClick){suppressClick=false;return;}if(locked&&!e.target.closest('.card,.gnode'))resetFocus();});
+
+/* ---------------- theme toggle ---------------- */
+const root=document.documentElement;
+document.getElementById('themeToggle').addEventListener('click',()=>{const cur=root.getAttribute('data-theme');const isDark=cur?cur==='dark':matchMedia('(prefers-color-scheme:dark)').matches;root.setAttribute('data-theme',isDark?'light':'dark');});
+
+/* ---------------- init ---------------- */
+renderIntro();fit();window.addEventListener('resize',fit);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit);
+</script>
