@@ -62,23 +62,32 @@ const statusBox = document.getElementById('mapStatus');
 const zoomInBtn = document.getElementById('zoomIn');
 const zoomOutBtn = document.getElementById('zoomOut');
 const fitBtn = document.getElementById('fitMap');
+const resetFocusBtn = document.getElementById('resetFocus');
 const NS = 'http://www.w3.org/2000/svg';
 const center = {x:0,y:0};
+
+let linkLayer;
+let crossLayer;
+let nodeLayer;
+let overlayLayer;
+
 const branchAnchors = new Map();
-const routeGroups = new Map();
-const gradeGroups = new Map();
+const routeNodeGroups = new Map();
+const routeLines = new Map();
+const gradeNodes = new Map();
+const gradeTrunks = new Map();
 const crossElements = [];
 const routeToGrade = new Map();
 const themeToRoutes = new Map();
 const relationMap = new Map();
+
 const state = {
   x:window.innerWidth/2,
   y:window.innerHeight/2,
-  scale:Math.max(.62, Math.min(.92, window.innerWidth / 1800))
+  scale:Math.max(.62, Math.min(.92, window.innerWidth / 1800)),
+  pinnedGradeId:null
 };
 let drag = null;
-let activeRoutes = null;
-let activeGrades = null;
 
 function createThemeRelations(){
   grades.forEach(grade=>{
@@ -92,396 +101,396 @@ function createThemeRelations(){
     });
   });
   themeToRoutes.forEach(routes=>{
-    const ids = [...routes];
+    const ids=[...routes];
     ids.forEach(id=>{
-      const set = relationMap.get(id);
+      const set=relationMap.get(id);
       ids.forEach(other=>set.add(other));
     });
   });
 }
 
 function el(tag, attrs={}){
-  const node = document.createElementNS(NS, tag);
-  Object.entries(attrs).forEach(([key, value])=>node.setAttribute(key, value));
+  const node=document.createElementNS(NS, tag);
+  Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,value));
   return node;
 }
 
 function addText(parent, x, y, lines, className){
-  const text = el('text', {x, y, class:className, 'text-anchor':'middle'});
-  const arr = Array.isArray(lines) ? lines : [lines];
-  arr.forEach((line, index)=>{
-    const tspan = el('tspan', {x, dy:index===0?0:18});
-    tspan.textContent = line;
+  const text=el('text',{x,y,class:className,'text-anchor':'middle'});
+  const arr=Array.isArray(lines)?lines:[lines];
+  arr.forEach((line,index)=>{
+    const tspan=el('tspan',{x,dy:index===0?0:18});
+    tspan.textContent=line;
     text.appendChild(tspan);
   });
   parent.appendChild(text);
   return text;
 }
 
-function wrapText(text, maxChars=12){
-  const chars = [...String(text)];
-  const out = [];
-  for(let i=0; i<chars.length; i += maxChars){
-    out.push(chars.slice(i, i + maxChars).join(''));
-  }
-  return out.slice(0, 3);
+function wrapText(text,maxChars=12){
+  const chars=[...String(text)];
+  const out=[];
+  for(let i=0;i<chars.length;i+=maxChars) out.push(chars.slice(i,i+maxChars).join(''));
+  return out.slice(0,3);
 }
 
-function polar(angleDeg, radius){
-  const rad = angleDeg * Math.PI / 180;
-  return {x: Math.cos(rad) * radius, y: Math.sin(rad) * radius};
+function polar(angleDeg,radius){
+  const rad=angleDeg*Math.PI/180;
+  return {x:Math.cos(rad)*radius,y:Math.sin(rad)*radius};
 }
 
 function branchOffsets(count){
-  if(count === 1) return [0];
-  if(count === 2) return [-14, 14];
-  if(count === 3) return [-22, 0, 22];
-  const start = -18 * (count - 1) / 2;
-  return Array.from({length: count}, (_, i)=>start + i * 18);
+  if(count===1) return [0];
+  if(count===2) return [-14,14];
+  if(count===3) return [-22,0,22];
+  const start=-18*(count-1)/2;
+  return Array.from({length:count},(_,i)=>start+i*18);
 }
 
-function cardSize(type, text){
-  const lines = wrapText(text, type === 'grade' ? 6 : 12);
-  const height = type === 'grade' ? 92 : 84 + Math.max(0, lines.length - 1) * 14;
-  let width = 214;
-  if(type === 'center') width = 260;
-  if(type === 'grade') width = 210;
-  if(type === 'sheet') width = 236;
-  return {width, height, lines};
+function cardSize(type,text){
+  const lines=wrapText(text,type==='grade'?6:12);
+  const height=type==='grade'?92:84+Math.max(0,lines.length-1)*14;
+  let width=214;
+  if(type==='center') width=260;
+  if(type==='grade') width=210;
+  if(type==='sheet') width=236;
+  return {width,height,lines};
 }
 
-function makeNode({id, type, title, subtitle='', x, y, color, soft, badge=''}){
-  const {width, height, lines} = cardSize(type, title);
-  const group = el('g', {class:`map-node ${type}`, transform:`translate(${x - width/2} ${y - height/2})`});
-  group.style.setProperty('--node-color', color);
-  group.style.setProperty('--node-soft', soft);
-  group.dataset.id = id;
-  group.appendChild(el('rect', {class:'node-card', x:0, y:0, width, height, rx:type==='center'?28:24}));
+function makeNode({id,type,title,subtitle='',x,y,color,soft,badge=''}){
+  const {width,height,lines}=cardSize(type,title);
+  const group=el('g',{class:`map-node ${type}`,transform:`translate(${x-width/2} ${y-height/2})`});
+  group.style.setProperty('--node-color',color);
+  group.style.setProperty('--node-soft',soft);
+  group.dataset.id=id;
+  group.appendChild(el('rect',{class:'node-card',x:0,y:0,width,height,rx:type==='center'?28:24}));
 
-  let titleY = 34;
+  let titleY=34;
   if(badge){
-    group.appendChild(el('rect',{class:'node-badge', x:14, y:12, width:50, height:22, rx:11}));
-    addText(group, 39, 27, badge, 'node-badge-text');
-    titleY = 50;
+    group.appendChild(el('rect',{class:'node-badge',x:14,y:12,width:50,height:22,rx:11}));
+    addText(group,39,27,badge,'node-badge-text');
+    titleY=50;
   }
-  if(type === 'grade'){
-    addText(group, width/2, 24, `${subtitle}`, 'node-kicker');
-    titleY = 56;
+  if(type==='grade'){
+    addText(group,width/2,24,subtitle,'node-kicker');
+    titleY=56;
   }
-  if(type === 'center') titleY = 42;
-  addText(group, width/2, titleY, lines, 'node-title');
-  if(type !== 'grade' && subtitle){
-    addText(group, width/2, height - 16, wrapText(subtitle, 20)[0], 'node-sub');
-  }
-  if(type === 'grade'){
-    addText(group, width/2, height - 18, title === '六年級' ? '六年收束與行動' : '年級主線樞紐', 'node-sub');
-  }
+  if(type==='center') titleY=42;
+  addText(group,width/2,titleY,lines,'node-title');
+  if(type!=='grade'&&subtitle) addText(group,width/2,height-16,wrapText(subtitle,20)[0],'node-sub');
+  if(type==='grade') addText(group,width/2,height-18,title==='六年級'?'六年收束與行動':'年級主線樞紐','node-sub');
   return group;
 }
 
-function routePoints(gradeAngle, offset){
+function routePoints(gradeAngle,offset){
   return {
-    branch: polar(gradeAngle + offset, 438),
-    task: polar(gradeAngle + offset, 678),
-    sheet: polar(gradeAngle + offset, 920)
+    branch:polar(gradeAngle+offset,438),
+    task:polar(gradeAngle+offset,678),
+    sheet:polar(gradeAngle+offset,920)
   };
 }
 
-function trunkPoint(angle){
-  return polar(angle, 220);
+function trunkPoint(angle){ return polar(angle,220); }
+
+function routePath(from,branch,task,sheet){
+  return [`M ${from.x} ${from.y}`,`L ${branch.x} ${branch.y}`,`L ${task.x} ${task.y}`,`L ${sheet.x} ${sheet.y}`].join(' ');
 }
 
-function routePath(from, branch, task, sheet){
-  return [
-    `M ${from.x} ${from.y}`,
-    `L ${branch.x} ${branch.y}`,
-    `L ${task.x} ${task.y}`,
-    `L ${sheet.x} ${sheet.y}`
-  ].join(' ');
+function createLayers(){
+  viewport.innerHTML='';
+  linkLayer=el('g',{class:'link-layer'});
+  crossLayer=el('g',{class:'cross-layer'});
+  nodeLayer=el('g',{class:'node-layer'});
+  overlayLayer=el('g',{class:'overlay-layer'});
+  viewport.append(linkLayer,crossLayer,nodeLayer,overlayLayer);
+}
+
+function drawGuideLabels(){
+  linkLayer.appendChild(el('circle',{cx:0,cy:0,r:112,fill:'none',stroke:'#e3e8e4','stroke-dasharray':'6 8'}));
+  const hint=el('text',{x:0,y:-126,class:'grade-label','text-anchor':'middle'});
+  hint.textContent='從中心向外讀：年級 → 書名 → 任務 → 學習單';
+  overlayLayer.appendChild(hint);
 }
 
 function drawCenter(){
-  const centerNode = makeNode({
-    id:'center', type:'center', title:'北園六年閱讀 PBL',
-    subtitle:'六個年級 × 書名 × 任務 × 學習單',
-    x:center.x, y:center.y, color:'#4a6857', soft:'#f1f6f2', badge:'核心'
+  const centerNode=makeNode({id:'center',type:'center',title:'北園六年閱讀 PBL',subtitle:'六個年級 × 書名 × 任務 × 學習單',x:0,y:0,color:'#4a6857',soft:'#f1f6f2',badge:'核心'});
+  nodeLayer.appendChild(centerNode);
+}
+
+function relatedRoutesFor(routeId){
+  return relationMap.get(routeId)?new Set(relationMap.get(routeId)):new Set([routeId]);
+}
+
+function relatedRoutesForGrade(grade){
+  const routes=new Set();
+  grade.branches.forEach(branch=>{
+    relatedRoutesFor(branch.id).forEach(id=>routes.add(id));
   });
-  viewport.appendChild(centerNode);
+  return routes;
+}
+
+function gradesForRoutes(routeIds){
+  return new Set([...routeIds].map(id=>routeToGrade.get(id)).filter(Boolean));
 }
 
 function drawGradesAndRoutes(){
   grades.forEach(grade=>{
-    const gradePoint = trunkPoint(grade.angle);
-    const gradeGroup = el('g', {class:'grade-group', 'data-grade':grade.id});
-    const trunk = el('path', {
-      d:`M ${center.x} ${center.y} L ${gradePoint.x} ${gradePoint.y}`,
-      class:'map-link grade-trunk', stroke:grade.color, 'data-grade':grade.id
-    });
-    gradeGroup.appendChild(trunk);
-    const gradeNode = makeNode({
-      id:grade.id, type:'grade', title:grade.label, subtitle:`${grade.progress}｜${grade.role}`,
-      x:gradePoint.x, y:gradePoint.y, color:grade.color, soft:grade.soft
-    });
-    gradeGroup.appendChild(gradeNode);
-    gradeGroups.set(grade.id, gradeGroup);
+    const gradePoint=trunkPoint(grade.angle);
+    const trunk=el('path',{d:`M 0 0 L ${gradePoint.x} ${gradePoint.y}`,class:'map-link grade-trunk',stroke:grade.color,'data-grade':grade.id});
+    linkLayer.appendChild(trunk);
+    gradeTrunks.set(grade.id,trunk);
 
-    attachGradeHover(gradeGroup, grade);
-    viewport.appendChild(gradeGroup);
+    const gradeNode=makeNode({id:grade.id,type:'grade',title:grade.label,subtitle:`${grade.progress}｜${grade.role}`,x:gradePoint.x,y:gradePoint.y,color:grade.color,soft:grade.soft});
+    gradeNode.setAttribute('tabindex','0');
+    gradeNode.setAttribute('role','button');
+    gradeNode.setAttribute('aria-label',`${grade.label}，${grade.progress}，${grade.role}。點擊鎖定相關路線。`);
+    gradeNode.addEventListener('pointerdown',event=>event.stopPropagation());
+    attachGradeInteraction(gradeNode,trunk,grade);
+    nodeLayer.appendChild(gradeNode);
+    gradeNodes.set(grade.id,gradeNode);
 
-    const offsets = branchOffsets(grade.branches.length);
-    grade.branches.forEach((branch, index)=>{
-      const pts = routePoints(grade.angle, offsets[index]);
-      branchAnchors.set(branch.id, {grade:gradePoint, ...pts, color:grade.color});
+    const offsets=branchOffsets(grade.branches.length);
+    grade.branches.forEach((branch,index)=>{
+      const pts=routePoints(grade.angle,offsets[index]);
+      branchAnchors.set(branch.id,{grade:gradePoint,...pts,color:grade.color});
 
-      const routeGroup = el('g', {class:'route-group', 'data-route':branch.id});
-      const path = el('path', {
-        d:routePath(gradePoint, pts.branch, pts.task, pts.sheet),
-        class:'map-link route-line', stroke:grade.color, 'data-route':branch.id
-      });
-      routeGroup.appendChild(path);
+      const path=el('path',{d:routePath(gradePoint,pts.branch,pts.task,pts.sheet),class:'map-link route-line',stroke:grade.color,'data-route':branch.id});
+      linkLayer.appendChild(path);
+      routeLines.set(branch.id,path);
 
-      const bookNode = makeNode({
-        id:`${branch.id}-book`, type:'book', title:branch.book, subtitle:'核心文本',
-        x:pts.branch.x, y:pts.branch.y, color:grade.color, soft:grade.soft, badge:'書名'
-      });
-      const taskNode = makeNode({
-        id:`${branch.id}-task`, type:'task', title:branch.task, subtitle:branch.label,
-        x:pts.task.x, y:pts.task.y, color:grade.color, soft:grade.soft, badge:'任務'
-      });
-      const sheetNode = makeNode({
-        id:`${branch.id}-sheet`, type:'sheet', title:branch.sheet, subtitle:'閱讀學習單',
-        x:pts.sheet.x, y:pts.sheet.y, color:grade.color, soft:grade.soft, badge:'學習單'
-      });
-      routeGroup.appendChild(bookNode);
-      routeGroup.appendChild(taskNode);
-      routeGroup.appendChild(sheetNode);
-      routeGroups.set(branch.id, routeGroup);
-      attachRouteHover(routeGroup, grade, branch);
-      viewport.appendChild(routeGroup);
+      const nodeGroup=el('g',{class:'route-group','data-route':branch.id});
+      const bookNode=makeNode({id:`${branch.id}-book`,type:'book',title:branch.book,subtitle:'核心文本',x:pts.branch.x,y:pts.branch.y,color:grade.color,soft:grade.soft,badge:'書名'});
+      const taskNode=makeNode({id:`${branch.id}-task`,type:'task',title:branch.task,subtitle:branch.label,x:pts.task.x,y:pts.task.y,color:grade.color,soft:grade.soft,badge:'任務'});
+      const sheetNode=makeNode({id:`${branch.id}-sheet`,type:'sheet',title:branch.sheet,subtitle:'閱讀學習單',x:pts.sheet.x,y:pts.sheet.y,color:grade.color,soft:grade.soft,badge:'學習單'});
+      nodeGroup.append(bookNode,taskNode,sheetNode);
+      nodeGroup.addEventListener('pointerdown',event=>event.stopPropagation());
+      attachRouteHover(nodeGroup,path,grade,branch);
+      nodeLayer.appendChild(nodeGroup);
+      routeNodeGroups.set(branch.id,nodeGroup);
     });
   });
 }
 
-function crossPath(from, to){
-  const dx = to.x - from.x;
-  const dy = to.y - from.y;
-  const c1x = from.x + dx * .3;
-  const c1y = from.y + (dy > 0 ? 90 : -90);
-  const c2x = from.x + dx * .7;
-  const c2y = to.y + (dy > 0 ? -90 : 90);
+function crossPath(from,to){
+  const dx=to.x-from.x,dy=to.y-from.y;
+  const c1x=from.x+dx*.3;
+  const c1y=from.y+(dy>0?90:-90);
+  const c2x=from.x+dx*.7;
+  const c2y=to.y+(dy>0?-90:90);
   return `M ${from.x} ${from.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${to.x} ${to.y}`;
 }
 
 function drawCrossLinks(){
-  const group = el('g', {class:'cross-group'});
   crossLinks.forEach(link=>{
-    const from = branchAnchors.get(link.from)?.task;
-    const to = branchAnchors.get(link.to)?.task;
-    if(!from || !to) return;
-    const path = el('path', {d:crossPath(from, to), class:'map-link cross-link', 'data-from':link.from, 'data-to':link.to});
-    group.appendChild(path);
-    const mx = (from.x + to.x) / 2;
-    const my = (from.y + to.y) / 2;
-    const label = el('text', {x:mx, y:my - 8, class:'cross-label', 'text-anchor':'middle'});
-    label.textContent = link.label;
-    group.appendChild(label);
-    crossElements.push({path, label, from:link.from, to:link.to, labelText:link.label});
+    const from=branchAnchors.get(link.from)?.task;
+    const to=branchAnchors.get(link.to)?.task;
+    if(!from||!to) return;
+    const path=el('path',{d:crossPath(from,to),class:'map-link cross-link','data-from':link.from,'data-to':link.to});
+    crossLayer.appendChild(path);
+    const label=el('text',{x:(from.x+to.x)/2,y:(from.y+to.y)/2-8,class:'cross-label','text-anchor':'middle'});
+    label.textContent=link.label;
+    crossLayer.appendChild(label);
+    crossElements.push({path,label,from:link.from,to:link.to,labelText:link.label});
   });
-  viewport.insertBefore(group, viewport.firstChild);
 }
 
-function relatedRoutesFor(routeId){
-  return relationMap.get(routeId) ? new Set(relationMap.get(routeId)) : new Set([routeId]);
+function updateStatusForRoute(grade,branch,relatedSet){
+  const relatedNames=[...relatedSet].filter(id=>id!==branch.id).map(id=>{
+    for(const item of grades){
+      const found=item.branches.find(b=>b.id===id);
+      if(found) return `${item.label}｜${found.book}`;
+    }
+    return null;
+  }).filter(Boolean);
+  statusBox.innerHTML=`<strong>${grade.label}｜${branch.label}</strong><p><b>書名：</b>${branch.book}<br><b>要做的事：</b>${branch.task}<br><b>學習單：</b>${branch.sheet}</p>${relatedNames.length?`<ul>${relatedNames.map(name=>`<li>關聯路線：${name}</li>`).join('')}</ul>`:''}`;
 }
 
-function updateStatusForRoute(grade, branch, relatedSet){
-  const relatedNames = [...relatedSet]
-    .filter(id=>id !== branch.id)
-    .map(id=>{
-      for(const item of grades){
-        const found = item.branches.find(branchItem=>branchItem.id === id);
-        if(found) return `${item.label}｜${found.book}`;
-      }
-      return null;
-    })
-    .filter(Boolean);
-
-  statusBox.innerHTML = `
-    <strong>${grade.label}｜${branch.label}</strong>
-    <p><b>書名：</b>${branch.book}<br><b>要做的事：</b>${branch.task}<br><b>學習單：</b>${branch.sheet}</p>
-    ${relatedNames.length ? `<ul>${relatedNames.map(name=>`<li>關聯路線：${name}</li>`).join('')}</ul>` : ''}
-  `;
-}
-
-function updateStatusForGrade(grade){
-  statusBox.innerHTML = `
-    <strong>${grade.label}｜${grade.progress}｜${grade.role}</strong>
-    <p>這個年級共有 ${grade.branches.length} 條主線，已全部展開在畫布上。</p>
-    <ul>${grade.branches.map(branch=>`<li>${branch.book} → ${branch.task} → ${branch.sheet}</li>`).join('')}</ul>
-  `;
+function updateStatusForGrade(grade,pinned=false){
+  const related=relatedRoutesForGrade(grade);
+  const relatedGradeNames=[...gradesForRoutes(related)].filter(id=>id!==grade.id).map(id=>grades.find(g=>g.id===id)?.label).filter(Boolean);
+  statusBox.innerHTML=`<strong>${grade.label}｜${grade.progress}｜${grade.role}${pinned?'｜已鎖定':''}</strong><p>${pinned?'滑鼠移開也會保持聚焦。':'目前為暫時聚焦。點年級可鎖定。'} 這個年級的主線與跨年級延伸會一起亮起。</p><ul>${grade.branches.map(branch=>`<li>${branch.book} → ${branch.task} → ${branch.sheet}</li>`).join('')}${relatedGradeNames.length?`<li>跨年級連到：${relatedGradeNames.join('、')}</li>`:''}</ul>`;
 }
 
 function showDefaultStatus(){
-  statusBox.innerHTML = `
-    <strong>閱讀方式</strong>
-    <p>這是一張全展開路網圖。先看中心，再沿著六個年級往外讀到書名、任務與學習單；滑過任一路線時，其他不相關路線會淡化。</p>
-  `;
+  statusBox.innerHTML='<strong>閱讀方式</strong><p>這是一張全展開路網圖。滑過路線可暫時聚焦；點年級可鎖定該年級所有主線與跨年級關聯，直到再次點擊或按「取消聚焦」。</p>';
 }
 
-function applyActive(routeIds, gradeIds){
-  activeRoutes = routeIds ? new Set(routeIds) : null;
-  activeGrades = gradeIds ? new Set(gradeIds) : null;
+function setNodeState(node,on,hot=false){
+  if(!node) return;
+  node.classList.toggle('is-dim',!on);
+  node.classList.toggle('is-hot',Boolean(on&&hot));
+}
 
-  routeGroups.forEach((group, routeId)=>{
-    const on = activeRoutes ? activeRoutes.has(routeId) : true;
-    group.classList.toggle('is-dim', !on);
-    group.querySelectorAll('.map-link, .map-node').forEach(elm=>{
-      elm.classList.toggle('is-dim', !on);
-      elm.classList.toggle('route-hot', on && elm.classList.contains('map-link'));
-      elm.classList.toggle('is-hot', on && elm.classList.contains('map-node'));
-    });
-  });
+function setLineState(line,on,hot=false){
+  if(!line) return;
+  line.classList.toggle('is-dim',!on);
+  line.classList.toggle('route-hot',Boolean(on&&hot));
+}
 
-  gradeGroups.forEach((group, gradeId)=>{
-    const on = activeGrades ? activeGrades.has(gradeId) : true;
-    group.querySelectorAll('.map-link, .map-node').forEach(elm=>{
-      elm.classList.toggle('is-dim', !on);
-      elm.classList.toggle('route-hot', on && elm.classList.contains('map-link'));
-      elm.classList.toggle('is-hot', on && elm.classList.contains('map-node'));
-    });
+function applyActive(routeIds,gradeIds,{pinnedGradeId=null}={}){
+  const routes=new Set(routeIds||[]);
+  const gradeSet=new Set(gradeIds||[]);
+
+  routeNodeGroups.forEach((group,routeId)=>setNodeState(group,routes.has(routeId),routes.has(routeId)));
+  routeLines.forEach((line,routeId)=>setLineState(line,routes.has(routeId),routes.has(routeId)));
+  gradeNodes.forEach((node,gradeId)=>{
+    const on=gradeSet.has(gradeId);
+    setNodeState(node,on,on);
+    node.classList.toggle('is-pinned',gradeId===pinnedGradeId);
   });
+  gradeTrunks.forEach((line,gradeId)=>setLineState(line,gradeSet.has(gradeId),gradeSet.has(gradeId)));
 
   crossElements.forEach(item=>{
-    const on = activeRoutes ? (activeRoutes.has(item.from) && activeRoutes.has(item.to)) : true;
-    item.path.classList.toggle('is-dim', !on);
-    item.path.classList.toggle('cross-hot', on);
-    item.label.classList.toggle('is-dim', !on);
+    const on=routes.has(item.from)&&routes.has(item.to);
+    item.path.classList.toggle('is-dim',!on);
+    item.path.classList.toggle('cross-hot',on);
+    item.label.classList.toggle('is-dim',!on);
   });
 }
 
-function resetActive(){
-  activeRoutes = null;
-  activeGrades = null;
-  routeGroups.forEach(group=>{
-    group.querySelectorAll('.map-link, .map-node').forEach(elm=>{
-      elm.classList.remove('is-dim','route-hot','is-hot');
-    });
-  });
-  gradeGroups.forEach(group=>{
-    group.querySelectorAll('.map-link, .map-node').forEach(elm=>{
-      elm.classList.remove('is-dim','route-hot','is-hot');
-    });
-  });
+function clearVisualFocus(){
+  routeNodeGroups.forEach(group=>group.classList.remove('is-dim','is-hot'));
+  routeLines.forEach(line=>line.classList.remove('is-dim','route-hot'));
+  gradeNodes.forEach(node=>node.classList.remove('is-dim','is-hot','is-pinned'));
+  gradeTrunks.forEach(line=>line.classList.remove('is-dim','route-hot'));
   crossElements.forEach(item=>{
     item.path.classList.remove('is-dim','cross-hot');
     item.label.classList.remove('is-dim');
   });
+}
+
+function focusGrade(grade,pinned=false){
+  const routes=relatedRoutesForGrade(grade);
+  const gradeIds=gradesForRoutes(routes);
+  gradeIds.add(grade.id);
+  applyActive(routes,gradeIds,{pinnedGradeId:pinned?grade.id:null});
+  updateStatusForGrade(grade,pinned);
+}
+
+function restorePinnedOrDefault(){
+  if(state.pinnedGradeId){
+    const grade=grades.find(item=>item.id===state.pinnedGradeId);
+    if(grade){ focusGrade(grade,true); return; }
+  }
+  clearVisualFocus();
   showDefaultStatus();
 }
 
-function attachRouteHover(group, grade, branch){
-  const enter = ()=>{
-    const related = relatedRoutesFor(branch.id);
-    const gradeIds = new Set([...related].map(id=>routeToGrade.get(id)).filter(Boolean));
+function setPinnedGrade(grade){
+  if(state.pinnedGradeId===grade.id){
+    state.pinnedGradeId=null;
+    resetFocusBtn.disabled=true;
+    resetFocusBtn.classList.remove('focus-active');
+    restorePinnedOrDefault();
+    return;
+  }
+  state.pinnedGradeId=grade.id;
+  resetFocusBtn.disabled=false;
+  resetFocusBtn.classList.add('focus-active');
+  focusGrade(grade,true);
+}
+
+function attachRouteHover(group,path,grade,branch){
+  const enter=()=>{
+    if(state.pinnedGradeId){
+      updateStatusForRoute(grade,branch,relatedRoutesFor(branch.id));
+      return;
+    }
+    const related=relatedRoutesFor(branch.id);
+    const gradeIds=gradesForRoutes(related);
     gradeIds.add(grade.id);
-    applyActive(related, gradeIds);
-    updateStatusForRoute(grade, branch, related);
+    applyActive(related,gradeIds);
+    updateStatusForRoute(grade,branch,related);
   };
-  const leave = ()=>resetActive();
-  group.addEventListener('mouseenter', enter);
-  group.addEventListener('mouseleave', leave);
-  group.addEventListener('focusin', enter);
-  group.addEventListener('focusout', leave);
+  const leave=()=>restorePinnedOrDefault();
+  [group,path].forEach(target=>{
+    target.addEventListener('mouseenter',enter);
+    target.addEventListener('mouseleave',leave);
+  });
 }
 
-function attachGradeHover(group, grade){
-  const enter = ()=>{
-    const ownRoutes = new Set(grade.branches.map(branch=>branch.id));
-    applyActive(ownRoutes, new Set([grade.id]));
-    updateStatusForGrade(grade);
+function attachGradeInteraction(node,trunk,grade){
+  const enter=()=>{
+    if(state.pinnedGradeId) return;
+    focusGrade(grade,false);
   };
-  const leave = ()=>resetActive();
-  group.addEventListener('mouseenter', enter);
-  group.addEventListener('mouseleave', leave);
-  group.addEventListener('focusin', enter);
-  group.addEventListener('focusout', leave);
+  const leave=()=>restorePinnedOrDefault();
+  [node,trunk].forEach(target=>{
+    target.addEventListener('mouseenter',enter);
+    target.addEventListener('mouseleave',leave);
+  });
+  const activate=event=>{
+    if(event) event.stopPropagation();
+    setPinnedGrade(grade);
+  };
+  node.addEventListener('click',activate);
+  node.addEventListener('keydown',event=>{
+    if(event.key==='Enter'||event.key===' '){ event.preventDefault(); activate(event); }
+  });
 }
 
-function setTransform(){
-  viewport.setAttribute('transform', `translate(${state.x} ${state.y}) scale(${state.scale})`);
-}
+function setTransform(){ viewport.setAttribute('transform',`translate(${state.x} ${state.y}) scale(${state.scale})`); }
 
 function fitMap(){
-  state.x = window.innerWidth / 2;
-  state.y = window.innerHeight / 2;
-  state.scale = Math.max(.62, Math.min(.92, window.innerWidth / 1800));
+  state.x=window.innerWidth/2;
+  state.y=window.innerHeight/2;
+  state.scale=Math.max(.62,Math.min(.92,window.innerWidth/1800));
   setTransform();
 }
 
 function bindPanZoom(){
-  canvas.addEventListener('pointerdown', event=>{
-    drag = {x:event.clientX, y:event.clientY, originX:state.x, originY:state.y};
+  canvas.addEventListener('pointerdown',event=>{
+    drag={x:event.clientX,y:event.clientY,originX:state.x,originY:state.y};
     canvas.classList.add('dragging');
     canvas.setPointerCapture(event.pointerId);
   });
-  canvas.addEventListener('pointermove', event=>{
+  canvas.addEventListener('pointermove',event=>{
     if(!drag) return;
-    state.x = drag.originX + (event.clientX - drag.x);
-    state.y = drag.originY + (event.clientY - drag.y);
+    state.x=drag.originX+(event.clientX-drag.x);
+    state.y=drag.originY+(event.clientY-drag.y);
     setTransform();
   });
-  const endDrag = event=>{
-    if(event.pointerId && canvas.hasPointerCapture(event.pointerId)){
-      canvas.releasePointerCapture(event.pointerId);
-    }
-    drag = null;
+  const endDrag=event=>{
+    if(event.pointerId&&canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+    drag=null;
     canvas.classList.remove('dragging');
   };
-  canvas.addEventListener('pointerup', endDrag);
-  canvas.addEventListener('pointercancel', endDrag);
-  canvas.addEventListener('wheel', event=>{
+  canvas.addEventListener('pointerup',endDrag);
+  canvas.addEventListener('pointercancel',endDrag);
+  canvas.addEventListener('wheel',event=>{
     event.preventDefault();
-    const factor = event.deltaY < 0 ? 1.08 : 0.92;
-    const next = Math.max(.34, Math.min(1.6, state.scale * factor));
-    const rect = svg.getBoundingClientRect();
-    const px = event.clientX - rect.left;
-    const py = event.clientY - rect.top;
-    const wx = (px - state.x) / state.scale;
-    const wy = (py - state.y) / state.scale;
-    state.scale = next;
-    state.x = px - wx * state.scale;
-    state.y = py - wy * state.scale;
+    const factor=event.deltaY<0?1.08:.92;
+    const next=Math.max(.34,Math.min(1.6,state.scale*factor));
+    const rect=svg.getBoundingClientRect();
+    const px=event.clientX-rect.left,py=event.clientY-rect.top;
+    const wx=(px-state.x)/state.scale,wy=(py-state.y)/state.scale;
+    state.scale=next;
+    state.x=px-wx*state.scale;
+    state.y=py-wy*state.scale;
     setTransform();
-  }, {passive:false});
+  },{passive:false});
 }
 
 function bindButtons(){
-  zoomInBtn.addEventListener('click', ()=>{
-    state.scale = Math.min(1.6, state.scale * 1.12);
-    setTransform();
+  zoomInBtn.addEventListener('click',()=>{ state.scale=Math.min(1.6,state.scale*1.12); setTransform(); });
+  zoomOutBtn.addEventListener('click',()=>{ state.scale=Math.max(.34,state.scale/1.12); setTransform(); });
+  fitBtn.addEventListener('click',fitMap);
+  resetFocusBtn.addEventListener('click',()=>{
+    state.pinnedGradeId=null;
+    resetFocusBtn.disabled=true;
+    resetFocusBtn.classList.remove('focus-active');
+    restorePinnedOrDefault();
   });
-  zoomOutBtn.addEventListener('click', ()=>{
-    state.scale = Math.max(.34, state.scale / 1.12);
-    setTransform();
-  });
-  fitBtn.addEventListener('click', fitMap);
 }
 
 function resize(){
-  svg.setAttribute('viewBox', `0 0 ${window.innerWidth} ${window.innerHeight}`);
+  svg.setAttribute('viewBox',`0 0 ${window.innerWidth} ${window.innerHeight}`);
   setTransform();
-}
-
-function drawGuideLabels(){
-  const ring = el('circle', {cx:0, cy:0, r:112, fill:'none', stroke:'#e3e8e4', 'stroke-dasharray':'6 8'});
-  viewport.insertBefore(ring, viewport.firstChild);
-  const hint = el('text', {x:0, y:-126, class:'grade-label', 'text-anchor':'middle'});
-  hint.textContent = '從中心向外讀：年級 → 書名 → 任務 → 學習單';
-  viewport.insertBefore(hint, viewport.firstChild);
 }
 
 function init(){
   createThemeRelations();
+  createLayers();
   resize();
   drawGuideLabels();
   drawCenter();
@@ -491,10 +500,7 @@ function init(){
   bindButtons();
   fitMap();
   showDefaultStatus();
-  window.addEventListener('resize', ()=>{
-    resize();
-    fitMap();
-  });
+  window.addEventListener('resize',()=>{ resize(); fitMap(); });
 }
 
 init();
