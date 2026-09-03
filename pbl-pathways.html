@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="北園國小六年閱讀 × 寫作 × PBL 互動學習路徑：從核心文本、閱讀策略、寫作轉化到真實行動。" />
-  <title>北園國小｜六年讀寫 PBL 互動圖</title>
+  <meta name="description" content="北園國小六年閱讀 × 寫作 × PBL 縱貫課程地圖：先看跨年級成長主軸，再展開核心文本、閱讀策略、寫作與真實行動。" />
+  <title>北園國小｜六年讀寫 PBL 縱貫課程地圖</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="pbl-pathways.css" />
 </head>
@@ -13,12 +13,13 @@
     <div class="header-inner">
       <a class="brand" href="index.html" aria-label="回到閱讀素養課程導航">
         <span class="brand-mark">閱</span>
-        <span><strong>北園閱讀素養</strong><small>六年讀寫 PBL 互動圖｜規劃版</small></span>
+        <span><strong>北園閱讀素養</strong><small>六年讀寫 PBL 縱貫課程地圖｜規劃版</small></span>
       </a>
       <nav class="main-nav" aria-label="互動圖導覽">
         <a href="index.html">← 回課程導航</a>
-        <a href="#pathways">互動路徑</a>
-        <a href="#progression">六年進階</a>
+        <a href="#journey">六年縱貫</a>
+        <a href="#stories">跨年級故事</a>
+        <a href="#pathways">年級細節</a>
       </nav>
     </div>
   </header>
@@ -27,20 +28,50 @@
     <section class="pathway-hero">
       <div>
         <p class="eyebrow">從一條上學路，走向一座城市</p>
-        <h1>讀文本・學寫法・探真實・做行動</h1>
-        <p class="lead">把六年的核心文本、閱讀策略、作文文體與 PBL 真實任務放在同一張互動路徑圖中。點任一年級或節點，就能追出完整的「閱讀 → 寫作 → 探究 → 行動」關聯。</p>
+        <h1>從看見我的世界，到改變我們的世界</h1>
+        <p class="lead">先看孩子從一年級到六年級如何沿著「在地、生態資源、探究、讀寫、科技公民」五條縱貫軸逐年成長；再往下展開每個年級的核心文本、閱讀策略、作文與 PBL 行動。</p>
       </div>
       <div class="pathway-principle" aria-label="讀寫PBL設計原則">
-        <span>讀文本</span><b>→</b><span>學寫法</span><b>→</b><span>蒐集真實素材</span><b>→</b><span>形成證據</span><b>→</b><span>寫出觀點</span><b>→</b><span>採取行動</span>
+        <span>讀文本</span><b>→</b><span>學寫法</span><b>→</b><span>探真實</span><b>→</b><span>找證據</span><b>→</b><span>寫觀點</span><b>→</b><span>做行動</span>
       </div>
     </section>
 
-    <section id="pathways" class="pathway-section">
+    <section id="journey" class="pathway-section journey-section">
       <div class="pathway-heading">
         <div>
-          <p class="eyebrow">互動式課程 Threads</p>
-          <h2>六年讀寫 PBL 學習路徑</h2>
-          <p>五欄依序是「年級情境 → 核心文本 → 閱讀策略 → 寫作轉化 → PBL 行動」。點節點可鎖定整束關聯，再點「清除選取」回到全貌。</p>
+          <p class="eyebrow">第一層｜六年縱貫總覽</p>
+          <h2>六年不是六套課，而是五條一路長大的能力線</h2>
+          <p>由上往下讀一年級到六年級；點上方縱貫軸可單獨追蹤一條成長路徑。點任何站點，可再跳到該年級的詳細 Threads。</p>
+        </div>
+      </div>
+
+      <div id="journeyAxisButtons" class="journey-axis-buttons" aria-label="縱貫軸選擇"></div>
+      <div class="journey-scroll drag-scroll" aria-label="六年縱貫課程地圖，可在空白處拖曳畫布">
+        <div id="journeyBoard" class="journey-board"></div>
+      </div>
+      <div id="journeyStatus" class="journey-status" aria-live="polite">
+        <strong>整體讀法</strong>
+        <p>從一年級的「觀察生活」，一路走到六年級的「驗證、論證與公民行動」。書籍是每一站的入口，真正的主角是跨年級持續升級的能力。</p>
+      </div>
+    </section>
+
+    <section id="stories" class="pathway-section story-section">
+      <div class="pathway-heading">
+        <div>
+          <p class="eyebrow">第二層｜跨年級故事</p>
+          <h2>三條最能看出「前一年為下一年準備什麼」的路線</h2>
+          <p>這裡不按年級切開，而是直接追蹤同一個問題如何跨年級變深、變廣。</p>
+        </div>
+      </div>
+      <div id="storyGrid" class="story-grid"></div>
+    </section>
+
+    <section id="pathways" class="pathway-section detail-pathway-section">
+      <div class="pathway-heading">
+        <div>
+          <p class="eyebrow">第三層｜單一年級詳細 Threads</p>
+          <h2>文本 → 閱讀策略 → 寫作轉化 → PBL 行動</h2>
+          <p>需要看教學細節時，再進到這一層。圖面已放大；桌機可直接在空白畫布按住滑鼠拖曳左右移動，也保留捲軸與觸控板操作。</p>
         </div>
         <button id="resetPathways" class="path-reset" type="button">清除選取</button>
       </div>
@@ -50,16 +81,17 @@
       <div class="pathway-legend" aria-label="圖例">
         <span><i class="legend-line"></i> 每條線代表一條完整學習路徑</span>
         <span><i class="legend-candidate"></i> 候選文本＝尚未定案</span>
-        <span>可點節點或路徑鎖定關聯</span>
+        <span><i class="legend-cross"></i> 虛線＝跨年級銜接</span>
+        <span>點節點可鎖定關聯；空白處可拖曳畫布</span>
       </div>
 
       <div class="pathway-canvas">
-        <div class="pathway-scroll" aria-label="互動路徑圖，可左右捲動">
-          <svg id="pathwaySvg" viewBox="0 0 1500 900" role="img" aria-label="北園國小六年閱讀、寫作與PBL互動路徑圖"></svg>
+        <div class="pathway-scroll drag-scroll" aria-label="互動路徑圖，可在空白處拖曳或左右捲動">
+          <svg id="pathwaySvg" viewBox="0 0 1620 1160" role="img" aria-label="北園國小六年閱讀、寫作與PBL互動路徑圖"></svg>
         </div>
         <aside id="pathwayStatus" class="pathway-status" aria-live="polite">
           <strong>如何閱讀這張圖？</strong>
-          <p>先點左側年級，看該年級的兩條主要學習路徑；也可以直接點中間的文本、閱讀策略或作文節點，反查它最後連到哪一個真實任務。</p>
+          <p>先選年級，再點文本、閱讀策略、作文或 PBL 節點，就能反查完整的「讀 → 寫 → 探究 → 行動」路徑。</p>
         </aside>
       </div>
     </section>
@@ -67,35 +99,34 @@
     <section id="progression" class="pathway-section progression-section">
       <div class="pathway-heading progression-heading">
         <div>
-          <p class="eyebrow">縱向螺旋</p>
-          <h2>六年能力不是換主題，而是逐年升級</h2>
+          <p class="eyebrow">六年級收束</p>
+          <h2>從判斷資訊，到判斷 AI，再到理解資源如何轉化</h2>
         </div>
       </div>
 
-      <div class="progression-grid">
-        <div class="progression-row">
-          <strong>閱讀／探究</strong>
-          <span>發現</span><b>→</b><span>記錄</span><b>→</b><span>調查</span><b>→</b><span>詮釋</span><b>→</b><span>分析</span><b>→</b><span>行動</span>
-        </div>
-        <div class="progression-row">
-          <strong>寫作</strong>
-          <span>描述</span><b>→</b><span>比較／記錄</span><b>→</b><span>記敘／說明</span><b>→</b><span>敘事整合</span><b>→</b><span>議論</span><b>→</b><span>論證／倡議</span>
-        </div>
-        <div class="progression-row">
-          <strong>科技／資料</strong>
-          <span>圖像／地圖</span><b>→</b><span>分類</span><b>→</b><span>圖表／流程</span><b>→</b><span>多來源整理</span><b>→</b><span>查證</span><b>→</b><span>AI 訓練／驗證</span>
-        </div>
-      </div>
-
-      <div class="progression-note">
-        <strong>六年級收束：</strong>從《分好的垃圾去哪兒了？》進入資源循環議題，學生蒐集物品影像、建立分類標籤、訓練 AI 影像辨識模型，再以測試結果與正式回收規則驗證 AI 判斷，最後形成證據型議論與校園／社區改善行動。
+      <div class="grade-six-grid">
+        <article>
+          <span>01</span>
+          <h3>公民選舉 × 假資訊</h3>
+          <p>五年級從利害關係人訪談、來源查證與小市長選舉建立公共問題意識；六年級再進入立場比較、論證與公民提案。</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>AI × 資源回收分類</h3>
+          <p>從《分好的垃圾去哪兒了？》理解分類規則，再蒐集影像、標註資料、訓練 AI、測試錯誤，最後以正式規則驗證 AI 判斷。</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>火箭爐 × 稻作副產物資源循環</h3>
+          <p>由四年級「水 × 稻米」向下延伸：北園種稻後產生稻梗、米糠，六年級以火箭爐與燃燒模型探究熱裂解、炭化、黑煙與資源再利用。</p>
+        </article>
       </div>
     </section>
   </main>
 
   <footer>
-    <span>北園國小閱讀磐石計畫｜六年讀寫 PBL 互動圖</span>
-    <span>互動呈現概念參考 <a href="https://github.com/larashero3-dotcom/lieflat-charts" target="_blank" rel="noopener">Lieflat Charts</a> 的路徑追蹤設計；本頁程式為本專案獨立實作。</span>
+    <span>北園國小閱讀磐石計畫｜六年讀寫 PBL 縱貫課程地圖</span>
+    <span>Threads 互動概念參考 <a href="https://github.com/larashero3-dotcom/lieflat-charts" target="_blank" rel="noopener">Lieflat Charts</a>；本頁程式為本專案獨立實作。</span>
   </footer>
 
   <script src="pbl-pathways.js"></script>
