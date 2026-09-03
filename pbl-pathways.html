@@ -3,28 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="北園國小六年閱讀 PBL 可展開式知識地圖：以五條縱貫主軸連結一年級至六年級的文本、閱讀、寫作與 PBL。" />
-  <title>北園國小｜六年閱讀 PBL 知識地圖</title>
+  <meta name="description" content="北園國小六年閱讀 PBL 全展開式知識地圖：以年級為主，向外展開核心書名、任務與學習單。" />
+  <title>北園國小｜六年閱讀 PBL 路網知識地圖</title>
   <link rel="stylesheet" href="pbl-pathways.css" />
 </head>
 <body>
   <main class="map-shell">
-    <div class="map-toolbar" aria-label="知識地圖工具列">
-      <a class="map-home" href="index.html">← 課程導航</a>
+    <header class="map-toolbar" aria-label="知識地圖工具列">
+      <a class="map-home" href="index.html">← 回課程導航</a>
       <div class="map-title">
-        <strong>北園六年閱讀 PBL 知識地圖</strong>
-        <span>點主軸展開六年縱貫；點年級展開文本、讀法、寫作與 PBL</span>
+        <strong>北園六年閱讀 PBL 路網知識地圖</strong>
+        <span>以年級為主，向外展開書名、任務與學習單；移到任一路線，會亮出該路線與相關路線。</span>
       </div>
       <div class="map-actions">
         <button id="zoomOut" type="button" aria-label="縮小">−</button>
         <button id="zoomIn" type="button" aria-label="放大">＋</button>
         <button id="fitMap" type="button">回到中心</button>
-        <button id="collapseMap" type="button">全部收合</button>
       </div>
-    </div>
+    </header>
 
     <div id="mapCanvas" class="map-canvas" aria-label="可拖曳與縮放的六年閱讀 PBL 知識地圖">
-      <svg id="mindmapSvg" role="img" aria-label="北園國小六年閱讀 PBL 知識地圖">
+      <svg id="mindmapSvg" role="img" aria-label="北園六年閱讀 PBL 路網知識地圖">
         <g id="mapViewport"></g>
       </svg>
     </div>
@@ -32,13 +31,13 @@
     <div class="map-help">
       <span><b>拖曳</b> 移動畫布</span>
       <span><b>滾輪</b> 縮放</span>
-      <span><b>點節點</b> 展開／收合</span>
-      <span class="dash-key"><i></i> 跨年級主題連線</span>
+      <span><b>滑過路線</b> 顯示關聯</span>
+      <span class="dash-key"><i></i> 跨年級關聯線</span>
     </div>
 
     <aside id="mapStatus" class="map-status" aria-live="polite">
-      <strong>從中心開始</strong>
-      <p>先選一條六年縱貫主軸，看看同一個能力或問題如何從一年級一路長到六年級。</p>
+      <strong>閱讀方式</strong>
+      <p>這是一張全展開路網圖。先看中心，再沿著六個年級往外讀到書名、任務與學習單；滑過任一路線時，其他不相關路線會淡化。</p>
     </aside>
   </main>
 
