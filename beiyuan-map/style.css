@@ -49,3 +49,6 @@
 :root[data-theme=dark] .detail .gap-missing{color:#f6c9c1}:root[data-theme=dark] .detail .gap-discussion{color:#c4d6f5}
 
 .hub .node-title{font-size:22px}
+
+/* 卡片彩色編號（與他校知識圖一致） */
+.card .node-type{align-items:center}.node-tag{display:inline-flex;align-items:center;gap:5px}.node-code{background:var(--node-color);color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:7px;letter-spacing:.5px;font-family:"PMingLiU",serif;white-space:nowrap}
