@@ -13,6 +13,8 @@
   const pageSrc=(d,p)=>`${PAGE_BASE}${d}-${String(p).padStart(2,'0')}.jpg`;
   const narrow=()=>matchMedia('(max-width:700px)').matches;
   const color=i=>getComputedStyle(document.documentElement).getPropertyValue(`--c${i??0}`).trim();
+  // 節編號：章群序號＋節序（第六群「終」只有一節，不加序號）；子節再加（一）（二）。
+  function sectionCode(n){const s=graph.sections.find(s=>s.id===subsectionParent(n.id));if(!s)return '';const base=s.ch===6?numbers[5]:`${numbers[s.ch-1]}-${s.no}`;if(n.type!=='Subsection')return base;const m=/^（([一二三四五六七八九十]+)）/.exec(n.title);return m?`${base}-(${m[1]})`:base;}
   const subsectionParent=id=>all.get(id)?.type==='Subsection'?parent(id):id;
   const anchor=()=>{const n=all.get(selected);return n?.type==='Subsection'?parent(n.id):n?.type==='Section'?n.id:null;};
   const chapterIndex=id=>{const s=graph.sections.find(s=>s.id===id);return s?s.ch-1:0;};
@@ -71,7 +73,7 @@
     const out=$('detail-body');out.replaceChildren();
     if(compare){out.append(make('h3','兩校如何連起閱讀與行動'),make('p','以下為整理者跨文件比較；不是原方案共同提出的主張。','note'));graph.comparisons.forEach(c=>{out.append(make('h4',c.theme),make('p','民和｜'+c.minhe),make('p','龍山｜'+c.longshan));c.refs.forEach(id=>out.append(button((id.startsWith('minhe')?'民和｜':'龍山｜')+all.get(id).title,()=>choose(id))));});return;}
     const n=all.get(selected)||all.get(doc),type={Document:'學校方案核心',Chapter:'原文章群',Section:'原文章節',Subsection:'原文子節'};
-    out.append(make('p',type[n.type]||'來源內容','badge'),make('h3',n.type==='Document'?graph.documents.find(d=>d.id===doc).title:n.title));
+    out.append(make('p',type[n.type]||'來源內容','badge'),make('h3',n.type==='Document'?graph.documents.find(d=>d.id===doc).title:['Section','Subsection'].includes(n.type)?sectionCode(n)+'｜'+n.title:n.title));
     if(n.type==='Document'){
       out.append(make('p',n.summary),make('p','這張圖以學校為核心，向外接六個章群，再展開每節的重點與原文範例卡。點章群聚焦整組，點節卡看完整內容、相關節與原文頁面截圖；有子節的卡可再往外展開。'));
       out.append(make('p','實線是原文章節包含；虛線弧線連接「共有同一整理者主題」的兩節，可跨章，不能解讀成因果。','note'));source(n,out);
@@ -93,10 +95,10 @@
     computeRelated();
     scene=L.layout(graph,doc,expanded);scene.nodes.forEach(n=>{const p=positions.get(n.id);if(p){n.x=p.x;n.y=p.y;}});scene.edges.push(...L.links(graph,scene.nodes,theme));elements.clear();paths.length=0;$('nodes').replaceChildren();$('wires').replaceChildren();
     const chapters=scene.nodes.filter(n=>n.type==='Chapter');$('chapter-list').replaceChildren();chapters.forEach((n,i)=>{const b=button('',()=>choose(n.id));b.dataset.chapter=n.id;b.style.setProperty('--node-color',color(i));b.append(make('span',numbers[i],'chapter-dot'),make('span',labels[i],'chapter-short'),make('span',`${graph.sections.filter(s=>s.doc===doc&&`${doc}-ch${s.ch}`===n.id).length}節`,'chapter-count'));b.title=n.title;$('chapter-list').append(b);});
-    for(const n of scene.nodes){const el=make('button');el.type='button';el.className='node '+({Document:'hub',Chapter:'chapter',Section:'card',Subsection:'card subcard'}[n.type]||'card');el.dataset.nodeid=n.id;el.dataset.type=n.type;el.setAttribute('aria-label',n.type==='Document'?'學校核心：'+n.title:n.type==='Chapter'?'章群：'+n.title:'內容卡：'+n.title);el.style.setProperty('--node-color',color(n.color));
+    for(const n of scene.nodes){const el=make('button');el.type='button';el.className='node '+({Document:'hub',Chapter:'chapter',Section:'card',Subsection:'card subcard'}[n.type]||'card');el.dataset.nodeid=n.id;el.dataset.type=n.type;el.setAttribute('aria-label',n.type==='Document'?'學校核心：'+n.title:n.type==='Chapter'?'章群：'+n.title:'內容卡 '+sectionCode(n)+'：'+n.title);el.style.setProperty('--node-color',color(n.color));
       if(n.type==='Document'){el.append(make('span','核心','overline'),make('span',doc==='minhe'?'民和國小':'龍山國小','node-title'),make('span',doc==='minhe'?'閱萬年 · 展藝創永續':'樂讀 · 深學 · 共好','node-sub'));}
       else if(n.type==='Chapter'){const i=chapters.findIndex(c=>c.id===n.id);el.append(make('span',numbers[i],'chapter-no'),make('span',labels[i],'node-title'),make('span',`${graph.sections.filter(s=>s.doc===doc&&`${doc}-ch${s.ch}`===n.id).length}節 · 點選聚焦`,'node-sub'));}
-      else{const top=make('span',undefined,'node-type');top.append(make('span',n.type==='Subsection'?'子節':'原文章節'),make('span','PDF '+n.p.join('、')+'頁'));el.append(top,make('span',n.title.replace(/^[一二三四五六]、/,''),'node-title'));for(const [label,text] of [['重點',n.points?.[0]],['範例',n.examples?.[0]]]){const row=make('span',undefined,'node-row');row.append(make('b',label),make('span',text||'原節未另提供'));el.append(row);}
+      else{const top=make('span',undefined,'node-type');const tag=make('span',undefined,'node-tag');tag.append(make('b',sectionCode(n),'node-code'),make('span',n.type==='Subsection'?'子節':'節'));top.append(tag,make('span','PDF '+n.p.join('、')+'頁'));el.append(top,make('span',n.title.replace(/^[一二三四五六]、/,''),'node-title'));for(const [label,text] of [['重點',n.points?.[0]],['範例',n.examples?.[0]]]){const row=make('span',undefined,'node-row');row.append(make('b',label),make('span',text||'原節未另提供'));el.append(row);}
         if(relatedMap.has(n.id))el.append(make('span','相關：'+relatedMap.get(n.id).join('、'),'related-chip'));}
       el.title=n.title;el.addEventListener('click',e=>{if(e.detail===0||performance.now()>suppressClickUntil)choose(n.id);});$('nodes').append(el);elements.set(n.id,el);updatePosition(n);
     }

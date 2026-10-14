@@ -28,3 +28,6 @@
 #viewer-img.zoomed{max-width:none;width:180%;cursor:zoom-out}#viewer-img.failed{display:none}
 .viewer-tip{font-size:10px;color:var(--muted);margin-left:auto}
 @media(max-width:700px){.viewer{width:100vw;max-height:100vh;border-radius:0}.viewer-tip{display:none}#viewer-img.zoomed{width:260%}}
+
+/* 卡片節編號 */
+.card .node-type{align-items:center}.node-tag{display:inline-flex;align-items:center;gap:5px}.node-code{background:var(--node-color);color:#fff;font-size:14px;font-weight:900;padding:2px 8px;border-radius:7px;letter-spacing:.5px;font-family:"PMingLiU",serif}
