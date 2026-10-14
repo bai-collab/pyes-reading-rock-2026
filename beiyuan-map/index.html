@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>北園國小｜放射知識結構圖</title>
+<link rel="stylesheet" href="./style.css">
+</head><body>
+<figure class="stage" id="stage" aria-label="可平移縮放的放射知識圖"><div id="board"><svg id="wires" width="1" height="1" aria-label="實線結構與虛線主題關聯"></svg><div id="nodes"></div></div><figcaption class="sr-only">核心向外展開群組與內容卡。實線表示包含，虛線表示兩張卡共有整理者主題，不代表因果。</figcaption></figure>
+<header class="panel topbar" id="topbar"><div class="brand"><p class="eyebrow"><a class="home-link" href="../index.html">← 回課程導航</a>　北園國小 · 讀在地・會探究・能行動</p><h1>北園國小放射知識結構圖</h1><p id="status">核心 → 群組 → 內容卡</p></div><nav class="tools" aria-label="知識圖控制">
+<label class="sr-only" for="document">文件</label><select id="document"></select>
+<div class="search-wrap"><label class="sr-only" for="search">搜尋</label><input id="search" type="search" placeholder="搜尋單元、重點、待補"><div id="search-results" class="search-results" hidden aria-live="polite"></div></div>
+<label class="sr-only" for="theme">主題關聯</label><select id="theme"><option value="auto">全部主題關連</option><option value="">關閉虛線</option></select>
+<button id="zoom-out" aria-label="縮小">−</button><button id="zoom-in" aria-label="放大">＋</button><button id="fit">全圖</button><button id="reset" disabled>取消聚焦</button><button id="theme-toggle" aria-label="切換深淺色">深色</button><button id="gaps">待補清單</button><button id="download" aria-label="匯出圖譜資料">匯出</button>
+</nav></header>
+<aside class="panel legend" id="legend" aria-label="圖例"><div class="panel-head"><h2>圖例</h2><button id="legend-toggle" aria-label="收合圖例" aria-expanded="true">−</button></div><div id="legend-content"><div id="chapter-list"></div><p class="note">實線＝原文結構；虛線弧線＝兩張卡共有整理者主題（可跨群組）。點內容卡會亮起相關卡與連線。</p><div class="line-key"><span><i class="solid"></i>核心 → 群組 → 內容卡</span><span><i class="dashed"></i>同主題相關（非因果）</span><span><i class="related-key"></i>被點選卡的相關卡</span><span><b class="flag-discussion">討論中</b>教師筆記，未定案</span><span><b class="flag-missing">待補</b>原文空白或待校方補件</span></div><p id="counts" class="note"></p></div></aside>
+<aside class="panel detail" id="detail" aria-label="節點完整內容"><div class="panel-head"><h2 id="detail-label">內容</h2><button id="detail-toggle" aria-label="收合內容面板" aria-expanded="true">−</button></div><div id="detail-body"></div></aside>
+<div class="panel hint" id="hint">拖曳空白 <b>移動畫布</b>　拖曳卡片 <b>重新排版</b>　滾輪 <b>縮放</b>　點群組 <b>聚焦</b> <span id="zoom-value">100%</span></div>
+<script src="./graph-data.js" defer></script>
+<script src="./layout.js" defer></script>
+<script src="./app.js" defer></script>
+</body></html>
