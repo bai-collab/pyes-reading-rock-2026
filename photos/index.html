@@ -13,7 +13,7 @@ nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}nav button{border:1px
 .cap{font-size:13px;color:var(--muted);margin:4px 0}
 .rd{font-size:13px;margin:3px 0}.imgs{display:flex;gap:6px;flex-wrap:wrap}.imgs img{height:120px;max-width:100%;border-radius:4px;object-fit:cover}
 </style></head><body>
-<p class="note"><a href="../">← 回首頁</a></p>
+<p class="note"><a href="../">← 回首頁</a>　<a href="../beiyuan-map/">← 回北園知識結構圖</a></p>
 <h1>北園歷年課程照片對照</h1>
 <p class="note">來源：102 學年成果冊（103教學卓越02012.docx）、109 學年方案（1091125教學卓越方案.docx）、113 年方案簡報（教學卓越方案全文1131217.pptx）。說明文字取自原檔圖說。主軸名稱依定案：讀稻鄉（原讀在地）、探稻香（原會探究・育稻香）、護稻田（原護地球）。「閱讀素養」「閱讀策略教學」依照片活動推定，屬【團隊確認】建議；閱E 代碼請以 108 課綱閱讀素養議題原文核對。</p>
 <nav id="nav"></nav>
@@ -50,11 +50,13 @@ const R={"g1-兒歌響叮噹-102":["直接提取；閱E12 喜愛閱讀、閱E14 
 const nav=document.getElementById('nav'),list=document.getElementById('list');
 const filters=[["all","全部"],["a1",A.a1],["a2",A.a2],["a3",A.a3],["x",A.x],["102","102 學年"],["109","109 學年"],["113","113 年"]];
 let cur="all";
-function draw(){list.innerHTML="";D.filter(d=>cur=="all"||d[3]==cur||String(d[1])==cur).forEach(d=>{
- const c=document.createElement('div');c.className="card "+d[3];
+const want=()=>{try{return decodeURIComponent(location.hash.slice(1))}catch(e){return ""}};
+function draw(){list.innerHTML="";const w=want(),one=D.some(d=>d[0]===w)?w:"";if(one){const b=document.createElement("p");b.className="note";b.innerHTML="目前只顯示一組照片。<a href=\"#\" id=\"show-all\">顯示全部</a>";list.appendChild(b);b.querySelector("a").onclick=e=>{e.preventDefault();history.replaceState(null,"",location.pathname);draw();};}D.filter(d=>one?d[0]===one:(cur=="all"||d[3]==cur||String(d[1])==cur)).forEach(d=>{
+ const c=document.createElement('div');c.className="card "+d[3];c.id=d[0];
  c.innerHTML=`<div class="head"><b>${d[5]}</b><span class="tag">${d[2]?d[2]+" 年級":"跨年級"}</span><span class="tag">${d[1]} 學年</span><span class="tag">${A[d[3]]}</span><span class="tag">策略：${d[4]}</span><span class="tag">申報書：${d[6]}</span></div><p class="cap">${d[7]}</p>${R[d[0]]?`<p class="rd"><b>閱讀素養：</b>${R[d[0]][0]}</p><p class="rd"><b>閱讀策略教學：</b>${R[d[0]][1]}</p>`:""}<div class="imgs">${(files[d[0]]||[]).map(f=>`<img loading="lazy" src="${(thumbs[d[0]]||{})[f]||(d[0]+"/"+f)}" alt="${d[5]}">`).join("")}</div><p class="cap">資料夾：${d[0]}</p>`;
  list.appendChild(c);});
  [...nav.children].forEach(b=>b.classList.toggle('on',b.dataset.k==cur));}
 filters.forEach(([k,t])=>{const b=document.createElement('button');b.textContent=t;b.dataset.k=k;b.onclick=()=>{cur=k;draw()};nav.appendChild(b)});
+window.addEventListener("hashchange",draw);
 draw();
 </script></body></html>

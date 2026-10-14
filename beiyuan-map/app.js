@@ -13,7 +13,7 @@
   // 卡片編號：申報書用「章群序號-節序」（只有一節的章只寫章號），子項加 -(序)；課程總圖用「主軸號｜年級」。
   const GRADES=['一年級','二年級','三年級','四年級','五年級','六年級'];
   function sectionCode(n){const s=graph.sections.find(s=>s.id===subsectionParent(n.id));if(!s)return '';const d=docMeta(s.doc),g=d.groupNumbers[s.ch-1];
-    const base=s.doc==='curriculum'?`${g}｜${GRADES[s.no-1]}`:(graph.sections.filter(x=>x.doc===s.doc&&x.ch===s.ch).length===1?g:`${g}-${s.no}`);
+    const base=(s.doc==='curriculum'||s.doc==='history')?`${g}｜${GRADES[s.no-1]}`:(graph.sections.filter(x=>x.doc===s.doc&&x.ch===s.ch).length===1?g:`${g}-${s.no}`);
     if(n.type!=='Subsection')return base;const m=/-sub(\d+)$/.exec(n.id);return m?`${base}-(${m[1]})`:base;}
   const subsectionParent=id=>all.get(id)?.type==='Subsection'?parent(id):id;
   const anchor=()=>{const n=all.get(selected);return n?.type==='Subsection'?parent(n.id):n?.type==='Section'?n.id:null;};
@@ -60,7 +60,7 @@
     const n=all.get(selected)||all.get(doc),d=docMeta(doc),type={Document:'文件核心',Chapter:'群組',Section:'內容卡',Subsection:'子項'};
     out.append(make('p',type[n.type]||'來源內容','badge'),make('h3',n.type==='Document'?d.title:['Section','Subsection'].includes(n.type)?sectionCode(n)+'｜'+n.title.replace(/^[一二三四五六]年級｜/,'').replace(/^\d-\d /,''):n.title));
     if(n.type==='Document'){
-      out.append(make('p',n.summary),...(n.groupNote?[make('p',n.groupNote,'raw')]:[]),make('p',n.limits,'note'),make('p','點群組可聚焦整組；點內容卡可看重點、原文、討論中與待補，並亮起有共同主題的其他卡。','note'));flagList(out,'整份文件待補',n.gaps,'missing');source(n,out);
+      out.append(make('p',n.summary),...(n.groupNote?[make('p',n.groupNote,'raw')]:[]),make('p',n.limits,'note'),make('p','點群組可聚焦整組；點內容卡可看重點、原文、討論中與待補，並亮起有共同主題的其他卡。','note'));flagList(out,'整份文件待補',n.gaps,'missing');source(n,out);if(n.originalUrl){const a=make('a',`開啟${n.originalShort||'原始版本'}`,'source');a.href=n.originalUrl;a.target='_blank';a.rel='noopener noreferrer';out.append(a);}
     }else if(n.type==='Chapter'){
       const ss=sectionsOf(doc,n.id),gi=Number(n.id.split('-ch')[1])-1;if(d.groupOriginal&&d.groupOriginal[gi]!==d.groupLabels[gi])out.append(make('p',`主軸名稱已定案；原文件名稱「${d.groupOriginal[gi]}」`,'raw'));out.append(make('p',n.title,'raw'),make('p',`${ss.length}張卡；點卡或以下名稱查看內容。`));ss.forEach(s=>out.append(button(s.title,()=>choose(s.id))));source(n,out);
     }else{
@@ -68,6 +68,7 @@
       if(n.raw)out.append(make('p','原文格內容：'+n.raw,'raw'));
       flagList(out,'討論中（教師筆記，未定案）',n.discussion,'discussion');flagList(out,'待補（之後補上）',n.missing,'missing');
       if(n.crossRefs?.length){out.append(make('h4','跨文件對照'));n.crossRefs.forEach(r=>{const box=make('div',undefined,'xref');box.append(make('b',r.label),make('p',r.text));if(r.ref&&all.get(r.ref))box.append(button('前往：'+all.get(r.ref).title,()=>choose(r.ref)));out.append(box);});}
+      if(n.results?.length){out.append(make('h4','成果與證據'));for(const kind of ['照片','撰寫稿','補件']){const rs=n.results.filter(r=>r.kind===kind);if(!rs.length)continue;const box=make('div',undefined,'results');box.append(make('b',kind==='補件'?'補件檢核表':kind));const row=make('p',undefined,'result-links');rs.forEach(r=>{const a=make('a',r.label,'result-link');a.href=r.url;a.target='_blank';a.rel='noopener noreferrer';row.append(a);});box.append(row);out.append(box);}}
       source(n,out);
       if(relatedMap.size){out.append(make('h4',`相關卡（${relatedMap.size}）｜共有主題`));const list=make('div',undefined,'related-list');
         [...relatedMap].sort((a,b)=>b[1].length-a[1].length).forEach(([id,themes])=>{const r=all.get(id),b=button('',()=>choose(id));b.style.setProperty('--node-color',color(groupIndex(id)));b.append(make('span',`${d.groupNumbers[groupIndex(id)]}｜${r.title}`,'related-title'),make('span',themes.join('、'),'related-themes'));list.append(b);});
