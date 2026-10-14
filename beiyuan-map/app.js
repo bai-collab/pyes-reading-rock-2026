@@ -55,9 +55,9 @@
     const n=all.get(selected)||all.get(doc),d=docMeta(doc),type={Document:'文件核心',Chapter:'群組',Section:'內容卡',Subsection:'子項'};
     out.append(make('p',type[n.type]||'來源內容','badge'),make('h3',n.type==='Document'?d.title:n.title));
     if(n.type==='Document'){
-      out.append(make('p',n.summary),...(n.groupNote?[make('p',n.groupNote,'gap-discussion')]:[]),make('p',n.limits,'note'),make('p','點群組可聚焦整組；點內容卡可看重點、原文、討論中與待補，並亮起有共同主題的其他卡。','note'));flagList(out,'整份文件待補',n.gaps,'missing');source(n,out);
+      out.append(make('p',n.summary),...(n.groupNote?[make('p',n.groupNote,'raw')]:[]),make('p',n.limits,'note'),make('p','點群組可聚焦整組；點內容卡可看重點、原文、討論中與待補，並亮起有共同主題的其他卡。','note'));flagList(out,'整份文件待補',n.gaps,'missing');source(n,out);
     }else if(n.type==='Chapter'){
-      const ss=sectionsOf(doc,n.id),gi=Number(n.id.split('-ch')[1])-1;if(d.groupOriginal&&d.groupOriginal[gi]!==d.groupLabels[gi])out.append(make('p',`討論中：主軸名稱為以稻為主題的發想版；原文名稱「${d.groupOriginal[gi]}」`,'gap-discussion'));out.append(make('p',n.title,'raw'),make('p',`${ss.length}張卡；點卡或以下名稱查看內容。`));ss.forEach(s=>out.append(button(s.title,()=>choose(s.id))));source(n,out);
+      const ss=sectionsOf(doc,n.id),gi=Number(n.id.split('-ch')[1])-1;if(d.groupOriginal&&d.groupOriginal[gi]!==d.groupLabels[gi])out.append(make('p',`主軸名稱已定案；原文件名稱「${d.groupOriginal[gi]}」`,'raw'));out.append(make('p',n.title,'raw'),make('p',`${ss.length}張卡；點卡或以下名稱查看內容。`));ss.forEach(s=>out.append(button(s.title,()=>choose(s.id))));source(n,out);
     }else{
       out.append(make('h4','重點（整理）'));const ul=make('ul');(n.points||[]).forEach(p=>ul.append(make('li',p)));out.append(ul,make('h4','原文內容'));(n.examples||[]).forEach(t=>out.append(make('p',t,'example')));
       if(n.raw)out.append(make('p','原文格內容：'+n.raw,'raw'));
