@@ -20,7 +20,7 @@ h1{font-size:1.7rem;margin:.2em 0}h2{font-size:1.25rem;margin:2em 0 .6em;border-
 .d{color:var(--warn);font-weight:bold;text-decoration:underline}
 .note{color:var(--muted);font-size:.85rem}
 .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.9rem}.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-.chart{display:grid;gap:6px}
+.mx td,.mx th{text-align:center}.mx td:first-child,.mx th:first-child{text-align:left}.mx .low{color:var(--warn);font-weight:bold}
 .row{display:grid;grid-template-columns:minmax(120px,210px) 1fr;gap:10px;align-items:center}
 .row .lab{font-size:.85rem}
 .bars{display:grid;gap:2px}
@@ -57,12 +57,10 @@ button{border:1px solid var(--line);background:var(--card);color:var(--ink);bord
 <div class="card kpi"><span class="note">兩校皆有、北園沒有</span><b>4 種</b><span class="note">命名主軸、閱讀護照、經費表、問卷與學力圖表</span></div>
 </div>
 
-<h2>一、16 項子指標證據完整度</h2>
+<h2>一、16 項子指標證據完整度（矩陣）</h2>
 <div class="card">
-<div class="legend"><span><i style="background:var(--mh)"></i>民和</span><span><i style="background:var(--ls)"></i>龍山</span><span><i style="background:var(--by)"></i>北園（撰寫稿現況）</span></div>
-<p class="note">0＝沒有；1＝只有規劃或佔位；2＝有部分歷年證據；3＝有具體數據、年級表、課例與成效。分數為整理者依方案全文的判讀，非官方評分。</p>
-<div class="scale"><div></div><div><span>0</span><span>1</span><span>2</span><span>3</span></div></div>
-<div class="chart" id="chart"></div>
+<p class="note">0＝沒有；1＝只有規劃或佔位；2＝有部分歷年證據；3＝有具體數據、年級表、課例與成效。分數為整理者依方案全文的判讀，非官方評分；北園欄紅字＝1 分以下。</p>
+<div class="tw"><table class="mx"><thead><tr><th>子指標</th><th>民和</th><th>龍山</th><th>北園</th><th>與最高分差距</th></tr></thead><tbody id="mx"></tbody></table></div>
 </div>
 
 <h2>二、各指標差異與可改進之處</h2>
@@ -116,8 +114,8 @@ const R=[
 ['5-2 教學社群',2,3,1,'龍山：核心・學年・領域・議題四類社群；民和：閱讀推動社群累積 150 小時。','週三進修 PDCA 五步。','<span class="d">社群名稱與實例為推寫</span>。','用正式社群名冊改寫，並放一則真實的共備修正紀錄。'],
 ['5-3 專業發展機制',3,3,1,'民和：教師 FLOW 循環；龍山：核心小組 PDCA 圖。','6E 模式與 PDCA。','機制名稱沒有與理念呼應。','把 6E 或 PDCA 畫成一張循環圖，並和主軸名稱連結（例如稻作「育苗、播種、耕耘、收成」循環）。']];
 const C=['var(--mh)','var(--ls)','var(--by)'];
-const ch=document.getElementById('chart'),tb=document.getElementById('tbody');
-for(const r of R){const row=document.createElement('div');row.className='row';row.innerHTML=`<div class="lab">${r[0]}</div><div class="bars">${[1,2,3].map(i=>`<div class="bar" title="${['民和','龍山','北園'][i-1]}：${r[i]}" style="width:${Math.max(r[i]/3*100,2)}%;background:${C[i-1]}"></div>`).join('')}</div>`;ch.append(row);
+const ch=document.getElementById('mx'),tb=document.getElementById('tbody');
+for(const r of R){const row=document.createElement('tr');const gap=Math.max(r[1],r[2])-r[3];row.innerHTML=`<td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td class="${r[3]<=1?'low':''}">${r[3]}</td><td>${gap>0?'−'+gap:'0'}</td>`;ch.append(row);
 const tr=document.createElement('tr');tr.innerHTML=`<td>${r[0]}</td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td>`;tb.append(tr);}
 const t=document.getElementById('tt');const set=v=>{document.documentElement.dataset.theme=v;t.textContent=v==='dark'?'淺色':'深色';try{localStorage.setItem('ga-theme',v)}catch(e){}};
 try{const s=localStorage.getItem('ga-theme');if(s)set(s)}catch(e){}
