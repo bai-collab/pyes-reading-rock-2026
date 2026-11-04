@@ -66,9 +66,9 @@
     }else{
       out.append(make('h4','重點（整理）'));const ul=make('ul');(n.points||[]).forEach(p=>ul.append(make('li',p)));out.append(ul,make('h4','原文內容'));(n.examples||[]).forEach(t=>out.append(make('p',t,'example')));
       if(n.raw)out.append(make('p','原文格內容：'+n.raw,'raw'));
-      flagList(out,'討論中（教師筆記，未定案）',n.discussion,'discussion');flagList(out,'待補（之後補上）',n.missing,'missing');
+      flagList(out,'討論中（待會議定案）',n.discussion,'discussion');flagList(out,'待補（之後補上）',n.missing,'missing');
       if(n.crossRefs?.length){out.append(make('h4','跨文件對照'));n.crossRefs.forEach(r=>{const box=make('div',undefined,'xref');box.append(make('b',r.label),make('p',r.text));if(r.ref&&all.get(r.ref))box.append(button('前往：'+all.get(r.ref).title,()=>choose(r.ref)));out.append(box);});}
-      if(n.results?.length){out.append(make('h4','成果與證據'));for(const kind of ['照片','撰寫稿','補件']){const rs=n.results.filter(r=>r.kind===kind);if(!rs.length)continue;const box=make('div',undefined,'results');box.append(make('b',kind==='補件'?'補件檢核表':kind));const row=make('p',undefined,'result-links');rs.forEach(r=>{const a=make('a',r.label,'result-link');a.href=r.url;a.target='_blank';a.rel='noopener noreferrer';row.append(a);});box.append(row);out.append(box);}}
+      if(n.results?.length){out.append(make('h4','成果與證據'));for(const kind of ['撰寫稿','課例','照片','補件']){const rs=n.results.filter(r=>r.kind===kind);if(!rs.length)continue;const box=make('div',undefined,'results');box.append(make('b',kind==='補件'?'補件檢核表':kind==='課例'?'課例撰寫稿':kind));const row=make('p',undefined,'result-links');rs.forEach(r=>{const a=make('a',r.label,'result-link');a.href=r.url;a.target='_blank';a.rel='noopener noreferrer';row.append(a);});box.append(row);out.append(box);}}
       source(n,out);
       if(relatedMap.size){out.append(make('h4',`相關卡（${relatedMap.size}）｜共有主題`));const list=make('div',undefined,'related-list');
         [...relatedMap].sort((a,b)=>b[1].length-a[1].length).forEach(([id,themes])=>{const r=all.get(id),b=button('',()=>choose(id));b.style.setProperty('--node-color',color(groupIndex(id)));b.append(make('span',`${d.groupNumbers[groupIndex(id)]}｜${r.title}`,'related-title'),make('span',themes.join('、'),'related-themes'));list.append(b);});
